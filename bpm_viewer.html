@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BPM Playlist Viewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+Thai:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0a0a0f;--surface:#12121a;--border:#1e1e2e;--accent:#7fff6a;--text:#e8e8f0;--muted:#555570;--slow:#4a9eff;--mid:#7fff6a;--fast:#ff6a6a; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans Thai','Space Mono',monospace;min-height:100vh;padding:2rem}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);gap:1rem}
+  .header-left{display:flex;flex-direction:column;gap:0.5rem}
+  h1{font-family:'Space Mono',monospace;font-size:2rem;letter-spacing:-0.02em}
+  h1 span{color:var(--accent)}
+  .stats{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center}
+  .stat-chip{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:0.25rem 0.6rem;border-radius:20px;white-space:nowrap}
+  .stat-chip b{color:var(--accent);font-weight:700}
+  .upload-zone{border:2px dashed var(--border);border-radius:8px;padding:3rem;text-align:center;margin:4rem auto;max-width:500px;cursor:pointer;transition:border-color 0.2s}
+  .upload-zone:hover{border-color:var(--accent)}
+  .upload-zone p{color:var(--muted);font-family:'Space Mono',monospace;font-size:0.85rem;margin-top:0.75rem}
+  .upload-zone .icon{font-size:2.5rem}
+  #fileInput{display:none}
+  #mainContent{display:none}
+  .mood-row{display:flex;gap:0.6rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .mood-btn{background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:0.5rem 1rem;font-family:'Space Mono',monospace;font-size:0.75rem;border-radius:20px;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+  .mood-btn:hover{border-color:var(--accent);color:var(--text)}
+  .mood-btn.active{background:var(--accent);color:#0a0a0f;border-color:var(--accent);font-weight:700}
+  .controls{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+  input[type="text"]{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.6rem 1rem;font-family:'Space Mono',monospace;font-size:0.8rem;border-radius:4px;width:260px;outline:none;transition:border-color 0.2s}
+  input[type="text"]:focus{border-color:var(--accent)}
+  input[type="text"]::placeholder{color:var(--muted)}
+  select{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.6rem 1rem;font-family:'Space Mono',monospace;font-size:0.8rem;border-radius:4px;outline:none;cursor:pointer}
+  .bpm-range{display:flex;align-items:center;gap:0.5rem;font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted)}
+  .bpm-range input[type="range"]{width:80px;accent-color:var(--accent)}
+  .bpm-range span{color:var(--accent);min-width:30px}
+  .count{margin-left:auto;font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted)}
+  .playlist-bar{display:flex;gap:0.75rem;align-items:center;margin-bottom:1.5rem;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;flex-wrap:wrap}
+  .playlist-bar input{flex:1;min-width:200px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:0.5rem 0.75rem;font-family:'Space Mono',monospace;font-size:0.75rem;border-radius:4px;outline:none}
+  .playlist-bar input:focus{border-color:var(--accent)}
+  .playlist-bar input::placeholder{color:var(--muted)}
+  .btn-create{background:var(--accent);color:#0a0a0f;border:none;padding:0.5rem 1.25rem;font-family:'Space Mono',monospace;font-size:0.75rem;font-weight:700;border-radius:4px;cursor:pointer;white-space:nowrap;transition:opacity 0.15s}
+  .btn-create:hover{opacity:0.85}
+  .btn-create:disabled{opacity:0.4;cursor:not-allowed}
+  .playlist-status{font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:0.85rem}
+  thead th{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);text-align:left;padding:0.6rem 1rem;border-bottom:1px solid var(--border);letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;user-select:none;white-space:nowrap}
+  thead th:hover{color:var(--accent)}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s}
+  tbody tr:hover{background:var(--surface)}
+  td{padding:0.65rem 1rem;vertical-align:middle}
+  .td-num{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);width:40px}
+  .td-bpm{font-family:'Space Mono',monospace;font-weight:700;font-size:1rem;width:90px}
+  .td-bar{width:120px;padding-right:1.5rem}
+  .bar-wrap{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:2px}
+  .td-title{max-width:280px}
+  .track-row{display:flex;align-items:center;gap:0.75rem}
+  .album-art{width:40px;height:40px;border-radius:4px;object-fit:cover;background:var(--border);flex-shrink:0}
+  .album-art.loading{background:linear-gradient(90deg,var(--border) 25%,var(--surface) 50%,var(--border) 75%);background-size:200% 100%;animation:shimmer 1.2s infinite}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .track{font-weight:600;line-height:1.3;cursor:pointer}
+  .track:hover{color:var(--accent)}
+  .artist{font-size:0.75rem;color:var(--muted);margin-top:2px}
+  .td-mini{width:100px}
+  .mini-bar-wrap{display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted)}
+  .mini-bar{height:3px;border-radius:2px;flex:1;background:var(--border);overflow:hidden}
+  .mini-fill{height:100%;border-radius:2px}
+  .key-badge{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;border:2px solid;font-family:'Space Mono',monospace;font-size:0.7rem;font-weight:700;line-height:1.2;text-align:center}
+  .key-badge .camelot{font-size:0.6rem;opacity:0.7}
+  .saved-bar{display:none;align-items:center;gap:1rem;padding:0.75rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:1.5rem;font-family:'Space Mono',monospace;font-size:0.8rem}
+  .saved-bar span{color:var(--accent);flex:1}
+  .btn-clear{background:none;border:1px solid var(--border);color:var(--muted);padding:0.4rem 0.75rem;font-family:'Space Mono',monospace;font-size:0.7rem;border-radius:4px;cursor:pointer}
+  .btn-clear:hover{border-color:#ff6a6a;color:#ff6a6a}
+  .quiz-choice{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.65rem 1rem;font-family:'Noto Sans Thai','Space Mono',monospace;font-size:0.85rem;border-radius:6px;cursor:pointer;text-align:left;transition:all 0.15s}
+  .quiz-choice:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .quiz-choice.correct{border-color:#7fff6a;background:#7fff6a22;color:#7fff6a}
+  .quiz-choice.wrong{border-color:#ff6a6a;background:#ff6a6a22;color:#ff6a6a}
+  .quiz-choice:disabled{cursor:default}
+  .progress-wrap{margin-bottom:1rem;display:none}
+  .progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.15s;width:0%}
+  .progress-label{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:0.4rem}
+</style>
+</head>
+<body>
+
+<div id="uploadSection">
+  <header><h1>BPM <span>VIEWER</span></h1></header>
+  <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+    <div class="icon">🎵</div>
+    <p>คลิกเพื่ออัปโหลดไฟล์ CSV จาก Exportify</p>
+    <p style="font-size:0.7rem;margin-top:0.4rem">รองรับไฟล์ที่ export จาก exportify.net</p>
+  </div>
+  <input type="file" id="fileInput" accept=".csv" onchange="loadCSV(event)">
+</div>
+
+<div id="mainContent">
+  <header>
+    <div class="header-left">
+      <h1>SONG <span>VIEWER</span></h1>
+      <div class="stats" id="statsBox"></div>
+    </div>
+    <a href="editor.html" style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:0.4rem 0.75rem;border-radius:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🎛 Editor</a>
+  </header>
+  <div class="saved-bar" id="savedBar">
+    <span id="savedName"></span>
+    <input type="file" id="reloadInput" accept=".csv" style="display:none" onchange="reloadCSV(event)">
+    <button class="btn-clear" onclick="document.getElementById('reloadInput').click()" style="border-color:var(--accent);color:var(--accent)">🔄 Reload</button>
+    <button class="btn-clear" onclick="clearCSV()">เปลี่ยนไฟล์</button>
+  </div>
+
+  <div class="mood-row">
+    <button class="mood-btn active" onclick="setMood('all',this)">🎵 ทั้งหมด</button>
+    <button class="mood-btn" onclick="setMood('sad',this)">😢 เศร้า</button>
+    <button class="mood-btn" onclick="setMood('chill',this)">😌 ชิล</button>
+    <button class="mood-btn" onclick="setMood('happy',this)">😊 มีความสุข</button>
+    <button class="mood-btn" onclick="setMood('hype',this)">⚡ มีพลัง</button>
+    <button class="mood-btn" onclick="setMood('dance',this)">🕺 เต้นได้</button>
+    <button class="mood-btn" onclick="setMood('dark',this)">🌑 มืดหม่น</button>
+    <button class="mood-btn" onclick="setMood('acoustic',this)">🎸 Acoustic</button>
+    <button class="mood-btn" onclick="randomSong()" style="margin-left:auto;border-color:#ff6a6a;color:#ff6a6a">🎲 สุ่มเพลง</button>
+    <button class="mood-btn" onclick="startQuiz()" style="border-color:#4a9eff;color:#4a9eff">🎯 Quiz</button>
+  </div>
+
+  <div id="quizSection" style="display:none;margin-bottom:1.5rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+      <div style="font-family:'Space Mono',monospace;font-size:0.8rem;color:var(--muted)">
+        ข้อ <span id="qNum">1</span> &nbsp;|&nbsp; คะแนน <span id="qScore" style="color:var(--accent)">0</span>
+      </div>
+      <button class="btn-clear" onclick="endQuiz()">จบ Quiz</button>
+    </div>
+    <div style="display:flex;gap:2rem;align-items:center;flex-wrap:wrap">
+      <div style="position:relative;flex-shrink:0">
+        <img id="qArt" style="width:180px;height:180px;border-radius:12px;object-fit:cover;background:var(--border);filter:blur(12px) brightness(0.7);transition:filter 0.4s" src="" alt="">
+        <div id="qRevealLabel" style="display:none;position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:0.8rem;color:white;text-align:center;padding:0.5rem"></div>
+      </div>
+      <div style="flex:1;min-width:220px">
+        <div style="font-size:0.8rem;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:1rem">เพลงนี้ชื่ออะไร?</div>
+        <div id="qChoices" style="display:flex;flex-direction:column;gap:0.6rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="randomCard" style="display:none;margin-bottom:1.5rem;padding:1.25rem 1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;align-items:center;gap:1.5rem;flex-wrap:wrap">
+    <img id="rArt" style="width:64px;height:64px;border-radius:6px;object-fit:cover;background:var(--border);flex-shrink:0" src="" alt="">
+    <div style="flex:1;min-width:200px">
+      <div id="rTrack" style="font-weight:700;font-size:1.1rem;margin-bottom:0.25rem"></div>
+      <div id="rArtist" style="font-size:0.8rem;color:var(--muted)"></div>
+    </div>
+    <div style="display:flex;gap:1rem;align-items:center;font-family:'Space Mono',monospace;font-size:0.8rem">
+      <span id="rBpm" style="font-size:1.5rem;font-weight:700"></span>
+      <span id="rKey" style="opacity:0.7"></span>
+    </div>
+    <button class="mood-btn" onclick="randomSong()" style="border-color:#ff6a6a;color:#ff6a6a">🎲 สุ่มอีก</button>
+  </div>
+  <div class="controls">
+    <input type="text" id="search" placeholder="ค้นหาเพลง / ศิลปิน..." oninput="filterTable()">
+    <select id="sortCol" onchange="sortTable()">
+      <option value="Tempo">เรียงตาม BPM</option>
+      <option value="Energy">เรียงตาม Energy</option>
+      <option value="Danceability">เรียงตาม Danceability</option>
+      <option value="Track Name">เรียงตาม ชื่อเพลง</option>
+    </select>
+    <select id="sortDir" onchange="sortTable()">
+      <option value="asc">ต่ำ → สูง</option>
+      <option value="desc">สูง → ต่ำ</option>
+    </select>
+    <div class="bpm-range">
+      BPM
+      <input type="range" id="bpmMin" min="0" max="250" value="0" oninput="updateRange()">
+      <span id="bpmMinVal">0</span>–
+      <input type="range" id="bpmMax" min="0" max="250" value="250" oninput="updateRange()">
+      <span id="bpmMaxVal">250</span>
+    </div>
+    <div class="count" id="countLabel"></div>
+  </div>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">กำลังโหลดปกอัลบั้ม...</div>
+  </div>
+
+  <table id="mainTable" style="display:none">>
+    <thead>
+      <tr>
+        <th class="td-num">#</th>
+        <th onclick="setSortCol('Tempo')">BPM</th>
+        <th style="width:120px"></th>
+        <th onclick="setSortCol('Track Name')">เพลง / ศิลปิน</th>
+        <th onclick="setSortCol('Energy')">Energy</th>
+        <th onclick="setSortCol('Danceability')">Dance</th>
+        <th onclick="setSortCol('Key')">Key</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+  <div id="noResult" class="no-result" style="display:none">ไม่พบเพลงที่ค้นหา</div>
+</div>
+
+<script>
+let allData=[],filtered=[],sortKey='Tempo',sortDir='asc',bpmMin=0,bpmMax=250,currentMood='all';
+let blacklist = new Set(JSON.parse(localStorage.getItem('bpm_blacklist')||'[]'));
+
+const MOODS={
+  all:r=>true,
+  sad:r=>v(r,'Valence')<0.35&&v(r,'Energy')<0.6,
+  chill:r=>v(r,'Energy')<0.5&&v(r,'Tempo')<110,
+  happy:r=>v(r,'Valence')>0.65&&v(r,'Energy')>0.5,
+  hype:r=>v(r,'Energy')>0.8&&v(r,'Tempo')>120,
+  dance:r=>v(r,'Danceability')>0.7,
+  dark:r=>v(r,'Valence')<0.25&&v(r,'Energy')>0.6,
+  acoustic:r=>v(r,'Acousticness')>0.5
+};
+
+const CAMELOT={'0_1':{c:'8B',n:'C',col:'#e74c3c'},'1_1':{c:'3B',n:'Db',col:'#e67e22'},'2_1':{c:'10B',n:'D',col:'#f1c40f'},'3_1':{c:'5B',n:'Eb',col:'#2ecc71'},'4_1':{c:'12B',n:'E',col:'#1abc9c'},'5_1':{c:'7B',n:'F',col:'#3498db'},'6_1':{c:'2B',n:'F#',col:'#9b59b6'},'7_1':{c:'9B',n:'G',col:'#e91e63'},'8_1':{c:'4B',n:'Ab',col:'#ff5722'},'9_1':{c:'11B',n:'A',col:'#cddc39'},'10_1':{c:'6B',n:'Bb',col:'#00bcd4'},'11_1':{c:'1B',n:'B',col:'#673ab7'},'0_0':{c:'5A',n:'Cm',col:'#2ecc71'},'1_0':{c:'12A',n:'Dbm',col:'#1abc9c'},'2_0':{c:'7A',n:'Dm',col:'#3498db'},'3_0':{c:'2A',n:'Ebm',col:'#9b59b6'},'4_0':{c:'9A',n:'Em',col:'#e91e63'},'5_0':{c:'4A',n:'Fm',col:'#ff5722'},'6_0':{c:'11A',n:'F#m',col:'#cddc39'},'7_0':{c:'6A',n:'Gm',col:'#00bcd4'},'8_0':{c:'1A',n:'Abm',col:'#673ab7'},'9_0':{c:'8A',n:'Am',col:'#e74c3c'},'10_0':{c:'3A',n:'Bbm',col:'#e67e22'},'11_0':{c:'10A',n:'Bm',col:'#f1c40f'}};
+
+function v(r,k){return parseFloat(r[k])||0}
+function bpmColor(b){return b<90?'var(--slow)':b<130?'var(--mid)':'var(--fast)'}
+function getKey(k,m){return CAMELOT[k+'_'+m]||{c:'?',n:'?',col:'#555570'}}
+
+function openSpotify(uri){
+  window.location.href = uri;
+}
+
+async function createPlaylist(){
+  const token = document.getElementById('tokenInput').value.trim();
+  const name = document.getElementById('playlistName').value.trim() || 'My BPM Playlist';
+  const status = document.getElementById('playlistStatus');
+
+  if(!token){ status.textContent='⚠️ ใส่ token ก่อน'; status.style.color='#ff6a6a'; return; }
+  if(filtered.length===0){ status.textContent='⚠️ ไม่มีเพลงในลิสต์'; status.style.color='#ff6a6a'; return; }
+
+  const btn = document.querySelector('.btn-create');
+  btn.disabled = true;
+  status.style.color = 'var(--muted)';
+  status.textContent = '⏳ กำลังสร้าง...';
+
+  try {
+    const meRes = await fetch('https://api.spotify.com/v1/me', {
+      headers: { Authorization: 'Bearer ' + token }
+    });
+    if(!meRes.ok) throw new Error('Token ไม่ถูกต้องหรือหมดอายุ');
+    const me = await meRes.json();
+
+    const plRes = await fetch(`https://api.spotify.com/v1/users/${me.id}/playlists`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, description: `สร้างจาก BPM Viewer — ${filtered.length} เพลง`, public: false })
+    });
+    if(!plRes.ok) throw new Error('สร้าง playlist ไม่สำเร็จ');
+    const pl = await plRes.json();
+
+    const uris = filtered.map(r => r['Track URI']).filter(Boolean);
+    for(let i=0; i<uris.length; i+=100){
+      await fetch(`https://api.spotify.com/v1/playlists/${pl.id}/tracks`, {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ uris: uris.slice(i, i+100) })
+      });
+    }
+
+    status.textContent = `✅ สร้างแล้ว "${name}" (${uris.length} เพลง)`;
+    status.style.color = 'var(--accent)';
+  } catch(err) {
+    status.textContent = '❌ ' + err.message;
+    status.style.color = '#ff6a6a';
+  }
+  btn.disabled = false;
+}
+
+function setMood(mood,btn){
+  currentMood=mood;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  filterTable();
+}
+
+function loadCSV(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const text=ev.target.result.replace(/^\uFEFF/,'');
+    localStorage.setItem('bpm_csv', text);
+    localStorage.setItem('bpm_csv_name', file.name);
+    initData(text);
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function reloadCSV(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const text=ev.target.result.replace(/^\uFEFF/,'');
+    localStorage.setItem('bpm_csv', text);
+    localStorage.setItem('bpm_csv_name', file.name);
+    initData(text);
+  };
+  reader.readAsText(file,'UTF-8');
+  e.target.value=''; // reset ให้เลือกไฟล์ชื่อเดิมซ้ำได้
+}
+
+function initData(text){
+  allData=parseCSV(text);
+  document.getElementById('uploadSection').style.display='none';
+  document.getElementById('mainContent').style.display='block';
+  const tempos=allData.map(r=>v(r,'Tempo')).filter(Boolean);
+  bpmMin=Math.floor(Math.min(...tempos));
+  bpmMax=Math.ceil(Math.max(...tempos));
+  ['bpmMin','bpmMax'].forEach(id=>{
+    document.getElementById(id).min=bpmMin;
+    document.getElementById(id).max=bpmMax;
+  });
+  document.getElementById('bpmMin').value=bpmMin;
+  document.getElementById('bpmMax').value=bpmMax;
+  document.getElementById('bpmMinVal').textContent=bpmMin;
+  document.getElementById('bpmMaxVal').textContent=bpmMax;
+  updateStats();
+  filterTable();
+}
+
+function toggleBlacklist(artist){
+  const artists = artist.split(';').map(a=>a.trim());
+  const allBlacklisted = artists.every(a => blacklist.has(a));
+  artists.forEach(a => allBlacklisted ? blacklist.delete(a) : blacklist.add(a));
+  localStorage.setItem('bpm_blacklist', JSON.stringify([...blacklist]));
+  filterTable();
+}
+
+function randomSong(){
+  const pool = filtered.filter(r => {
+    const artists = (r['Artist Name(s)']||'').split(';').map(a=>a.trim());
+    return !artists.some(a => blacklist.has(a));
+  });
+  if(pool.length===0){ 
+    alert('ไม่มีเพลงที่สุ่มได้ ลองลด blacklist ดูครับ'); 
+    return; 
+  }
+  const r = pool[Math.floor(Math.random()*pool.length)];
+  const ki = getKey(parseInt(r['Key']), parseInt(r['Mode']));
+  const bpm = v(r,'Tempo');
+  const tid = (r['Track URI']||'').replace('spotify:track:','');
+  const card = document.getElementById('randomCard');
+  document.getElementById('rTrack').textContent = r['Track Name'];
+  document.getElementById('rArtist').textContent = r['Artist Name(s)']||'';
+  document.getElementById('rBpm').textContent = bpm.toFixed(1)+' BPM';
+  document.getElementById('rBpm').style.color = bpmColor(bpm);
+  document.getElementById('rKey').textContent = ki.n+' · '+ki.c;
+  const artEl = document.getElementById('rArt');
+  const cachedSrc = artCache[tid];
+  if(cachedSrc){ artEl.src = cachedSrc; artEl.style.display='block'; }
+  else if(tid){ fetchArt(tid).then(src => { if(src) artEl.src=src; }); artEl.style.display='block'; }
+  else artEl.style.display='none';
+  card.style.display = 'flex';
+  if(tid){
+    card.style.cursor='pointer';
+    card.onclick = e => { if(!e.target.closest('button')) openSpotify('spotify:track:'+tid); };
+  }
+}
+
+let quizScore = 0, quizNum = 0, quizAnswer = '';
+
+function getUniqueAlbumTracks(){
+  // group เพลงตาม album ดึง 1 เพลงต่อ album
+  const seen = new Set();
+  return allData.filter(r => {
+    const album = r['Album Name']||r['Track Name'];
+    if(seen.has(album)) return false;
+    seen.add(album);
+    return artCache[(r['Track URI']||'').replace('spotify:track:','')] ; // เฉพาะที่มีปกแล้ว
+  });
+}
+
+function startQuiz(){
+  quizScore = 0; quizNum = 0;
+  document.getElementById('quizSection').style.display = 'block';
+  document.getElementById('randomCard').style.display = 'none';
+  nextQuestion();
+}
+
+function endQuiz(){
+  document.getElementById('quizSection').style.display = 'none';
+}
+
+function nextQuestion(){
+  const pool = getUniqueAlbumTracks();
+  if(pool.length < 3){ alert('ต้องโหลดปกก่อนนะครับ รอให้โหลดเสร็จแล้วค่อยเล่น'); endQuiz(); return; }
+
+  quizNum++;
+  document.getElementById('qNum').textContent = quizNum;
+  document.getElementById('qScore').textContent = quizScore;
+
+  // สุ่มเพลงถูก
+  const correct = pool[Math.floor(Math.random()*pool.length)];
+  quizAnswer = correct['Track Name'];
+  const correctTid = (correct['Track URI']||'').replace('spotify:track:','');
+
+  // สุ่ม 2 ตัวลวง (ไม่ซ้ำกัน ไม่ซ้ำถูก)
+  const wrong = pool.filter(r => r['Track Name'] !== quizAnswer);
+  const decoys = [];
+  while(decoys.length < 2 && wrong.length > 0){
+    const idx = Math.floor(Math.random()*wrong.length);
+    decoys.push(wrong.splice(idx,1)[0]['Track Name']);
+  }
+
+  // shuffle choices
+  const choices = [quizAnswer, ...decoys].sort(() => Math.random()-0.5);
+
+  // ใส่ปก blur - reset ก่อนแล้วค่อยใส่ src
+  const art = document.getElementById('qArt');
+  art.style.transition = 'none';
+  art.style.filter = 'blur(20px) brightness(0.4)';
+  art.src = '';
+  setTimeout(() => {
+    art.src = artCache[correctTid]||'';
+    art.style.transition = 'filter 0.4s';
+  }, 50);
+
+  // ใส่ตัวเลือก
+  const choicesEl = document.getElementById('qChoices');
+  choicesEl.innerHTML = choices.map(c =>
+    `<button class="quiz-choice" onclick="answerQuiz('${c.replace(/'/g,"\\'")}', this)">${c}</button>`
+  ).join('');
+}
+
+function answerQuiz(choice, btn){
+  const btns = document.querySelectorAll('.quiz-choice');
+  btns.forEach(b => b.disabled = true);
+
+  if(choice === quizAnswer){
+    btn.classList.add('correct');
+    quizScore++;
+    document.getElementById('qScore').textContent = quizScore;
+  } else {
+    btn.classList.add('wrong');
+    btns.forEach(b => { if(b.textContent === quizAnswer) b.classList.add('correct'); });
+  }
+
+  // เปิดปก
+  document.getElementById('qArt').style.filter = 'none';
+
+  // ข้อถัดไป
+  setTimeout(nextQuestion, 1800);
+}
+
+function clearCSV(){
+  localStorage.removeItem('bpm_csv');
+  localStorage.removeItem('bpm_csv_name');
+  location.reload();
+}
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('bpm_csv');
+  const name = localStorage.getItem('bpm_csv_name');
+  if(saved){
+    document.getElementById('savedName').textContent = '📂 ' + (name||'ไฟล์ที่บันทึกไว้');
+    document.getElementById('savedBar').style.display = 'flex';
+    initData(saved);
+  }
+});
+
+function parseCSV(text){
+  const lines=text.split('\n').filter(l=>l.trim());
+  const headers=parseLine(lines[0]);
+  return lines.slice(1).map(line=>{
+    const vals=parseLine(line);
+    const obj={};
+    headers.forEach((h,i)=>obj[h.trim()]=(vals[i]||'').trim());
+    return obj;
+  }).filter(r=>r['Track Name']);
+}
+
+function parseLine(line){
+  const res=[];let cur='',inQ=false;
+  for(const c of line){
+    if(c==='"')inQ=!inQ;
+    else if(c===','&&!inQ){res.push(cur);cur='';}
+    else cur+=c;
+  }
+  res.push(cur);
+  return res;
+}
+
+function updateStats(){
+  const t=allData.map(r=>v(r,'Tempo')).filter(Boolean);
+  const avg=(t.reduce((a,b)=>a+b,0)/t.length).toFixed(1);
+  document.getElementById('statsBox').innerHTML=`<span class="stat-chip"><b>${allData.length}</b> tracks</span><span class="stat-chip">avg <b>${avg}</b> BPM</span><span class="stat-chip"><b>${Math.min(...t).toFixed(0)}</b> – <b>${Math.max(...t).toFixed(0)}</b> BPM</span>`;
+}
+
+function updateRange(){
+  bpmMin=parseInt(document.getElementById('bpmMin').value);
+  bpmMax=parseInt(document.getElementById('bpmMax').value);
+  document.getElementById('bpmMinVal').textContent=bpmMin;
+  document.getElementById('bpmMaxVal').textContent=bpmMax;
+  filterTable();
+}
+
+function setSortCol(col){
+  sortDir=sortKey===col?(sortDir==='asc'?'desc':'asc'):'asc';
+  sortKey=col;
+  document.getElementById('sortCol').value=sortKey;
+  document.getElementById('sortDir').value=sortDir;
+  filterTable();
+}
+
+function sortTable(){
+  sortKey=document.getElementById('sortCol').value;
+  sortDir=document.getElementById('sortDir').value;
+  filterTable();
+}
+
+function filterTable(){
+  const q=document.getElementById('search').value.toLowerCase();
+  const moodFn=MOODS[currentMood]||(()=>true);
+  filtered=allData.filter(r=>{
+    const bpm=v(r,'Tempo');
+    return bpm>=bpmMin&&bpm<=bpmMax&&
+      (!q||r['Track Name'].toLowerCase().includes(q)||(r['Artist Name(s)']||'').toLowerCase().includes(q))&&
+      moodFn(r);
+  });
+  filtered.sort((a,b)=>{
+    const av=isNaN(a[sortKey])?a[sortKey]:parseFloat(a[sortKey]);
+    const bv=isNaN(b[sortKey])?b[sortKey]:parseFloat(b[sortKey]);
+    return sortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
+  });
+  renderTable();
+  loadAlbumArt();
+}
+
+const artCache = JSON.parse(localStorage.getItem('bpm_artcache')||'{}');
+
+async function fetchArt(tid){
+  if(!tid) return '';
+  if(artCache[tid] !== undefined) return artCache[tid];
+  try {
+    const res = await fetch(`http://localhost:8080/oembed/${tid}`);
+    if(res.ok){ 
+      const d = await res.json(); 
+      artCache[tid] = d.thumbnail_url;
+      localStorage.setItem('bpm_artcache', JSON.stringify(artCache));
+      return d.thumbnail_url; 
+    }
+  } catch(e){}
+  artCache[tid] = '';
+  localStorage.setItem('bpm_artcache', JSON.stringify(artCache));
+  return '';
+}
+
+async function loadAlbumArt(){
+  const tids = [...new Set(filtered.map(r=>(r['Track URI']||'').replace('spotify:track:','')).filter(Boolean))];
+  const toLoad = tids.filter(t => artCache[t] === undefined);
+
+  if(toLoad.length === 0){
+    // cache ครบแล้ว แสดงได้เลย
+    document.querySelectorAll('.album-art').forEach(img => {
+      const src = artCache[img.dataset.tid];
+      if(src) img.src = src; else img.style.display='none';
+    });
+    document.getElementById('mainTable').style.display = 'table';
+    return;
+  }
+
+  // แสดง progress bar ซ่อน table
+  const wrap = document.getElementById('progressWrap');
+  const fill = document.getElementById('progressFill');
+  const label = document.getElementById('progressLabel');
+  wrap.style.display = 'block';
+  document.getElementById('mainTable').style.display = 'none';
+
+  let done = 0;
+  for(const tid of toLoad){
+    await fetchArt(tid);
+    done++;
+    const pct = Math.round(done / toLoad.length * 100);
+    fill.style.width = pct + '%';
+    label.textContent = `โหลดปกอัลบั้ม ${done}/${toLoad.length}`;
+  }
+
+  // โหลดเสร็จ ใส่รูปแล้วโชตาราง
+  document.querySelectorAll('.album-art').forEach(img => {
+    const src = artCache[img.dataset.tid];
+    if(src) img.src = src; else img.style.display='none';
+  });
+  wrap.style.display = 'none';
+  document.getElementById('mainTable').style.display = 'table';
+}
+
+function renderTable(){
+  const tbody=document.getElementById('tableBody');
+  const maxBPM=Math.max(...allData.map(r=>v(r,'Tempo')));
+  document.getElementById('countLabel').textContent=filtered.length+' เพลง';
+  if(filtered.length===0){
+    tbody.innerHTML='';
+    document.getElementById('noResult').style.display='block';
+    return;
+  }
+  document.getElementById('noResult').style.display='none';
+  tbody.innerHTML=filtered.map((r,i)=>{
+    const bpm=v(r,'Tempo'),energy=v(r,'Energy'),dance=v(r,'Danceability');
+    const ki=getKey(parseInt(r['Key']),parseInt(r['Mode']));
+    const color=bpmColor(bpm);
+    const tid=(r['Track URI']||'').replace('spotify:track:','');
+    const uri=tid?'spotify:track:'+tid:'';
+    return `<tr>
+      <td class="td-num">${i+1}</td>
+      <td class="td-bpm" style="color:${color}">${bpm.toFixed(1)}</td>
+      <td class="td-bar"><div class="bar-wrap"><div class="bar-fill" style="width:${(bpm/maxBPM*100).toFixed(1)}%;background:${color}"></div></div></td>
+      <td class="td-title">
+        <div class="track-row">
+          <img class="album-art loading" data-tid="${tid}" src="" alt="" onload="this.classList.remove('loading')" onerror="this.style.display='none'">
+          <div>
+            ${uri?`<a href="${uri}" class="track" style="text-decoration:none;color:inherit;display:block">${r['Track Name']}</a>`:`<div class="track">${r['Track Name']}</div>`}
+            <div class="artist" style="display:flex;align-items:center;gap:0.4rem">
+              <span>${r['Artist Name(s)']||''}</span>
+              <button onclick="toggleBlacklist('${(r['Artist Name(s)']||'').replace(/'/g,"\\'")}');event.stopPropagation()" 
+                style="background:none;border:none;cursor:pointer;font-size:0.7rem;padding:0 2px;opacity:0.5;color:${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'#ff6a6a':'var(--muted)'}" 
+                title="${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'เอาออกจาก blacklist':'เพิ่มใน blacklist'}">
+                ${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'🚫':'✕'}
+              </button>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td class="td-mini"><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${(energy*100).toFixed(0)}%;background:#ff6a6a"></div></div><span>${(energy*100).toFixed(0)}</span></div></td>
+      <td class="td-mini"><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${(dance*100).toFixed(0)}%;background:#7fff6a"></div></div><span>${(dance*100).toFixed(0)}</span></div></td>
+      <td><div class="key-badge" style="color:${ki.col};border-color:${ki.col}" title="${ki.n} — ${ki.c}"><span>${ki.n}</span><span class="camelot">${ki.c}</span></div></td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
