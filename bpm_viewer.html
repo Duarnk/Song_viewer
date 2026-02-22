@@ -81,6 +81,14 @@
   .progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
   .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.15s;width:0%}
   .progress-label{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:0.4rem}
+  #mosaicGrid{display:none;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px}
+  .mosaic-item{position:relative;aspect-ratio:1;overflow:hidden;border-radius:4px;cursor:pointer;background:var(--border)}
+  .mosaic-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s}
+  .mosaic-item:hover img{transform:scale(1.05)}
+  .mosaic-item .mosaic-info{position:absolute;inset:0;background:rgba(0,0,0,0.75);opacity:0;transition:opacity 0.2s;display:flex;flex-direction:column;justify-content:flex-end;padding:0.6rem;backdrop-filter:blur(4px)}
+  .mosaic-item:hover .mosaic-info{opacity:1}
+  .mosaic-info .m-track{font-size:0.7rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .mosaic-info .m-bpm{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -121,6 +129,7 @@
     <button class="mood-btn" onclick="setMood('acoustic',this)">🎸 Acoustic</button>
     <button class="mood-btn" onclick="randomSong()" style="margin-left:auto;border-color:#ff6a6a;color:#ff6a6a">🎲 สุ่มเพลง</button>
     <button class="mood-btn" onclick="startQuiz()" style="border-color:#4a9eff;color:#4a9eff">🎯 Quiz</button>
+    <button class="mood-btn" id="mosaicToggle" onclick="toggleMosaic()" style="border-color:#9b59b6;color:#9b59b6">🖼 Mosaic</button>
   </div>
 
   <div id="quizSection" style="display:none;margin-bottom:1.5rem">
@@ -195,6 +204,7 @@
     <tbody id="tableBody"></tbody>
   </table>
   <div id="noResult" class="no-result" style="display:none">ไม่พบเพลงที่ค้นหา</div>
+  <div id="mosaicGrid" style="display:none"></div>
 </div>
 
 <script>
@@ -273,6 +283,44 @@ function setMood(mood,btn){
   document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   filterTable();
+}
+
+let mosaicMode = false;
+function toggleMosaic(){
+  mosaicMode = !mosaicMode;
+  const btn = document.getElementById('mosaicToggle');
+  const table = document.getElementById('mainTable');
+  const grid = document.getElementById('mosaicGrid');
+  if(mosaicMode){
+    btn.style.background = '#9b59b6';
+    btn.style.color = '#fff';
+    table.style.display = 'none';
+    grid.style.display = 'grid';
+    renderMosaic();
+  } else {
+    btn.style.background = '';
+    btn.style.color = '#9b59b6';
+    table.style.display = 'table';
+    grid.style.display = 'none';
+  }
+}
+
+function renderMosaic(){
+  const grid = document.getElementById('mosaicGrid');
+  grid.innerHTML = filtered.map(r => {
+    const tid = (r['Track URI']||'').replace('spotify:track:','');
+    const src = artCache[tid] || '';
+    const bpm = v(r,'Tempo').toFixed(1);
+    const uri = tid ? `spotify:track:${tid}` : '';
+    return `
+      <div class="mosaic-item" onclick="${uri?`openSpotify('${uri}')`:''}" >
+        <img src="${src}" alt="" onerror="this.style.display='none'">
+        <div class="mosaic-info">
+          <div class="m-track">${r['Track Name']}</div>
+          <div class="m-bpm">${bpm} BPM</div>
+        </div>
+      </div>`;
+  }).join('');
 }
 
 function loadCSV(e){
@@ -525,7 +573,7 @@ function filterTable(){
     return sortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
   });
   renderTable();
-  loadAlbumArt();
+  loadAlbumArt().then(() => { if(mosaicMode) renderMosaic(); });
 }
 
 const artCache = JSON.parse(localStorage.getItem('bpm_artcache')||'{}');
