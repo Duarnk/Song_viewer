@@ -127,6 +127,7 @@
     <input type="file" id="reloadInput" accept=".csv" style="display:none" onchange="reloadCSV(event)">
     <button class="btn-clear" onclick="document.getElementById('reloadInput').click()" style="border-color:var(--accent);color:var(--accent)">🔄 Reload</button>
     <button class="btn-clear" onclick="clearCSV()">เปลี่ยนไฟล์</button>
+    <button class="btn-clear" onclick="clearArtCache()" title="ล้าง cache รูปปกอัลบั้ม แล้วโหลดใหม่">🖼️ ล้าง cache รูป</button>
   </div>
 
   <div class="mood-row">
@@ -733,6 +734,22 @@ function filterTable(){
   });
 }
 
+function clearArtCache(){
+  localStorage.removeItem('bpm_artcache');
+  localStorage.removeItem('bpm_artcache_ver');
+  Object.keys(artCache).forEach(k => delete artCache[k]);
+  loadAlbumArt().then(() => {
+    if(currentView === 'mosaic') renderMosaic();
+    else if(currentView === 'galaxy') renderGalaxy();
+  });
+  alert('ล้าง cache รูปแล้ว! กำลังโหลดใหม่...');
+}
+
+const CACHE_VERSION = 'v2';
+if(localStorage.getItem('bpm_artcache_ver') !== CACHE_VERSION){
+  localStorage.removeItem('bpm_artcache');
+  localStorage.setItem('bpm_artcache_ver', CACHE_VERSION);
+}
 const artCache = JSON.parse(localStorage.getItem('bpm_artcache')||'{}');
 
 async function fetchArt(tid){
