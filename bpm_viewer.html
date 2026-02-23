@@ -774,12 +774,14 @@ async function loadAlbumArt(){
   const toLoad = tids.filter(t => artCache[t] === undefined);
 
   if(toLoad.length === 0){
-    // cache ครบแล้ว แสดงได้เลย
-    document.querySelectorAll('.album-art').forEach(img => {
-      const src = artCache[img.dataset.tid];
-      if(src) img.src = src; else img.style.display='none';
-    });
     document.getElementById('mainTable').style.display = 'table';
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.album-art').forEach(img => {
+        const src = artCache[img.dataset.tid];
+        if(src){ img.src = src; img.classList.remove('loading'); }
+        else img.style.display='none';
+      });
+    });
     return;
   }
 
@@ -806,6 +808,13 @@ async function loadAlbumArt(){
   });
   wrap.style.display = 'none';
   document.getElementById('mainTable').style.display = 'table';
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.album-art').forEach(img => {
+      const src = artCache[img.dataset.tid];
+      if(src){ img.src = src; img.classList.remove('loading'); }
+      else img.style.display='none';
+    });
+  });
 }
 
 function renderTable(){
@@ -830,7 +839,7 @@ function renderTable(){
       <td class="td-bar"><div class="bar-wrap"><div class="bar-fill" style="width:${(bpm/maxBPM*100).toFixed(1)}%;background:${color}"></div></div></td>
       <td class="td-title">
         <div class="track-row">
-          <img class="album-art ${artCache[tid]?'':'loading'}" data-tid="${tid}" src="${artCache[tid]||''}" alt="" onload="this.classList.remove('loading')" onerror="this.style.display='none'">
+          <img class="album-art loading" data-tid="${tid}" src="" alt="" onload="this.classList.remove('loading')" onerror="this.style.display='none'">
           <div>
             ${uri?`<a href="${uri}" class="track" style="text-decoration:none;color:inherit;display:block">${r['Track Name']}</a>`:`<div class="track">${r['Track Name']}</div>`}
             <div class="artist" style="display:flex;align-items:center;gap:0.4rem">
