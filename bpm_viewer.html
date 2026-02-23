@@ -107,7 +107,7 @@
 <div id="uploadSection">
   <header><h1>BPM <span>VIEWER</span></h1></header>
   <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-    <div class="icon">🎵</div>
+    <div class="icon"></div>
     <p>คลิกเพื่ออัปโหลดไฟล์ CSV จาก Exportify</p>
     <p style="font-size:0.7rem;margin-top:0.4rem">รองรับไฟล์ที่ export จาก exportify.net</p>
   </div>
@@ -120,29 +120,29 @@
       <h1>SONG <span>VIEWER</span></h1>
       <div class="stats" id="statsBox"></div>
     </div>
-    <a href="editor.html" style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:0.4rem 0.75rem;border-radius:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🎛 Editor</a>
+    <a href="editor.html" style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:0.4rem 0.75rem;border-radius:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"> Editor</a>
   </header>
   <div class="saved-bar" id="savedBar">
     <span id="savedName"></span>
     <input type="file" id="reloadInput" accept=".csv" style="display:none" onchange="reloadCSV(event)">
-    <button class="btn-clear" onclick="document.getElementById('reloadInput').click()" style="border-color:var(--accent);color:var(--accent)">🔄 Reload</button>
+    <button class="btn-clear" onclick="document.getElementById('reloadInput').click()" style="border-color:var(--accent);color:var(--accent)"> Reload</button>
     <button class="btn-clear" onclick="clearCSV()">เปลี่ยนไฟล์</button>
-    <button class="btn-clear" onclick="clearArtCache()" title="ล้าง cache รูปปกอัลบั้ม แล้วโหลดใหม่">🖼️ ล้าง cache รูป</button>
+    <button class="btn-clear" onclick="clearArtCache()" title="ล้าง cache รูปปกอัลบั้ม แล้วโหลดใหม่"> ล้าง cache รูป</button>
   </div>
 
   <div class="mood-row">
-    <button class="mood-btn active" onclick="setMood('all',this)">🎵 ทั้งหมด</button>
-    <button class="mood-btn" onclick="setMood('sad',this)">😢 เศร้า</button>
-    <button class="mood-btn" onclick="setMood('chill',this)">😌 ชิล</button>
-    <button class="mood-btn" onclick="setMood('happy',this)">😊 มีความสุข</button>
-    <button class="mood-btn" onclick="setMood('hype',this)">⚡ มีพลัง</button>
-    <button class="mood-btn" onclick="setMood('dance',this)">🕺 เต้นได้</button>
-    <button class="mood-btn" onclick="setMood('dark',this)">🌑 มืดหม่น</button>
-    <button class="mood-btn" onclick="setMood('acoustic',this)">🎸 Acoustic</button>
+    <button class="mood-btn active" onclick="setMood('all',this)"> ทั้งหมด</button>
+    <button class="mood-btn" onclick="setMood('sad',this)"> เศร้า</button>
+    <button class="mood-btn" onclick="setMood('chill',this)"> ชิล</button>
+    <button class="mood-btn" onclick="setMood('happy',this)"> มีความสุข</button>
+    <button class="mood-btn" onclick="setMood('hype',this)"> มีพลัง</button>
+    <button class="mood-btn" onclick="setMood('dance',this)"> เต้นได้</button>
+    <button class="mood-btn" onclick="setMood('dark',this)"> มืดหม่น</button>
+    <button class="mood-btn" onclick="setMood('acoustic',this)"> Acoustic</button>
     <button class="mood-btn" onclick="randomSong()" style="margin-left:auto;border-color:#ff6a6a;color:#ff6a6a">สุ่มเพลง</button>
     <button class="mood-btn" onclick="startQuiz()" style="border-color:#4a9eff;color:#4a9eff">Quiz</button>
     <div style="position:relative">
-      <button class="mood-btn" id="viewModeBtn" onclick="toggleViewDropdown()" style="border-color:#9b59b6;color:#9b59b6">View: Table ▾</button>
+      <button class="mood-btn" id="viewModeBtn" onclick="toggleViewDropdown()" style="border-color:#9b59b6;color:#9b59b6">View: Table </button>
       <div id="viewDropdown" style="display:none;position:absolute;right:0;top:110%;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:100;min-width:140px">
         <div class="view-opt" onclick="setViewMode('table')">Table</div>
         <div class="view-opt" onclick="setViewMode('mosaic')">Mosaic</div>
@@ -180,7 +180,7 @@
       <span id="rBpm" style="font-size:1.5rem;font-weight:700"></span>
       <span id="rKey" style="opacity:0.7"></span>
     </div>
-    <button class="mood-btn" onclick="randomSong()" style="border-color:#ff6a6a;color:#ff6a6a">🎲 สุ่มอีก</button>
+    <button class="mood-btn" onclick="randomSong()" style="border-color:#ff6a6a;color:#ff6a6a"> สุ่มอีก</button>
   </div>
   <div class="controls">
     <input type="text" id="search" placeholder="ค้นหาเพลง / ศิลปิน..." oninput="filterTable()">
@@ -191,13 +191,13 @@
       <option value="Track Name">เรียงตาม ชื่อเพลง</option>
     </select>
     <select id="sortDir" onchange="sortTable()">
-      <option value="asc">ต่ำ → สูง</option>
-      <option value="desc">สูง → ต่ำ</option>
+      <option value="asc">ต่ำ  สูง</option>
+      <option value="desc">สูง  ต่ำ</option>
     </select>
     <div class="bpm-range">
       BPM
       <input type="range" id="bpmMin" min="0" max="250" value="0" oninput="updateRange()">
-      <span id="bpmMinVal">0</span>–
+      <span id="bpmMinVal">0</span>
       <input type="range" id="bpmMax" min="0" max="250" value="250" oninput="updateRange()">
       <span id="bpmMaxVal">250</span>
     </div>
@@ -265,13 +265,13 @@ async function createPlaylist(){
   const name = document.getElementById('playlistName').value.trim() || 'My BPM Playlist';
   const status = document.getElementById('playlistStatus');
 
-  if(!token){ status.textContent='⚠️ ใส่ token ก่อน'; status.style.color='#ff6a6a'; return; }
-  if(filtered.length===0){ status.textContent='⚠️ ไม่มีเพลงในลิสต์'; status.style.color='#ff6a6a'; return; }
+  if(!token){ status.textContent=' ใส่ token ก่อน'; status.style.color='#ff6a6a'; return; }
+  if(filtered.length===0){ status.textContent=' ไม่มีเพลงในลิสต์'; status.style.color='#ff6a6a'; return; }
 
   const btn = document.querySelector('.btn-create');
   btn.disabled = true;
   status.style.color = 'var(--muted)';
-  status.textContent = '⏳ กำลังสร้าง...';
+  status.textContent = ' กำลังสร้าง...';
 
   try {
     const meRes = await fetch('https://api.spotify.com/v1/me', {
@@ -283,7 +283,7 @@ async function createPlaylist(){
     const plRes = await fetch(`https://api.spotify.com/v1/users/${me.id}/playlists`, {
       method: 'POST',
       headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description: `สร้างจาก BPM Viewer — ${filtered.length} เพลง`, public: false })
+      body: JSON.stringify({ name, description: `สร้างจาก BPM Viewer  ${filtered.length} เพลง`, public: false })
     });
     if(!plRes.ok) throw new Error('สร้าง playlist ไม่สำเร็จ');
     const pl = await plRes.json();
@@ -297,10 +297,10 @@ async function createPlaylist(){
       });
     }
 
-    status.textContent = `✅ สร้างแล้ว "${name}" (${uris.length} เพลง)`;
+    status.textContent = ` สร้างแล้ว "${name}" (${uris.length} เพลง)`;
     status.style.color = 'var(--accent)';
   } catch(err) {
-    status.textContent = '❌ ' + err.message;
+    status.textContent = ' ' + err.message;
     status.style.color = '#ff6a6a';
   }
   btn.disabled = false;
@@ -333,7 +333,7 @@ function setViewMode(mode){
   document.querySelector(`.view-opt[onclick="setViewMode('${mode}')"]`).classList.add('active');
 
   const labels = { table: 'Table', mosaic: 'Mosaic', galaxy: 'Galaxy' };
-  document.getElementById('viewModeBtn').textContent = 'View: ' + labels[mode] + ' ▾';
+  document.getElementById('viewModeBtn').textContent = 'View: ' + labels[mode] + ' ';
 
   document.getElementById('mainTable').style.display = 'none';
   document.getElementById('mosaicGrid').style.display = 'none';
@@ -447,7 +447,7 @@ function renderGalaxy(){
     if(hoveredStar){
       document.getElementById('gTipTrack').textContent = hoveredStar.r['Track Name'];
       document.getElementById('gTipArtist').textContent = hoveredStar.r['Artist Name(s)']||'';
-      document.getElementById('gTipBpm').textContent = hoveredStar.bpm.toFixed(1)+' BPM · Energy '+Math.round(hoveredStar.energy*100)+'%';
+      document.getElementById('gTipBpm').textContent = hoveredStar.bpm.toFixed(1)+' BPM  Energy '+Math.round(hoveredStar.energy*100)+'%';
       document.getElementById('gTipArt').src = artCache[hoveredStar.tid]||'';
       tip.style.display = 'block';
       tip.style.left = (mx+16)+'px'; tip.style.top = (my-16)+'px';
@@ -550,7 +550,7 @@ function randomSong(){
   document.getElementById('rArtist').textContent = r['Artist Name(s)']||'';
   document.getElementById('rBpm').textContent = bpm.toFixed(1)+' BPM';
   document.getElementById('rBpm').style.color = bpmColor(bpm);
-  document.getElementById('rKey').textContent = ki.n+' · '+ki.c;
+  document.getElementById('rKey').textContent = ki.n+'  '+ki.c;
   const artEl = document.getElementById('rArt');
   const cachedSrc = artCache[tid];
   if(cachedSrc){ artEl.src = cachedSrc; artEl.style.display='block'; }
@@ -657,7 +657,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('bpm_csv');
   const name = localStorage.getItem('bpm_csv_name');
   if(saved){
-    document.getElementById('savedName').textContent = '📂 ' + (name||'ไฟล์ที่บันทึกไว้');
+    document.getElementById('savedName').textContent = ' ' + (name||'ไฟล์ที่บันทึกไว้');
     document.getElementById('savedBar').style.display = 'flex';
     initData(saved);
   }
@@ -688,7 +688,7 @@ function parseLine(line){
 function updateStats(){
   const t=allData.map(r=>v(r,'Tempo')).filter(Boolean);
   const avg=(t.reduce((a,b)=>a+b,0)/t.length).toFixed(1);
-  document.getElementById('statsBox').innerHTML=`<span class="stat-chip"><b>${allData.length}</b> tracks</span><span class="stat-chip">avg <b>${avg}</b> BPM</span><span class="stat-chip"><b>${Math.min(...t).toFixed(0)}</b> – <b>${Math.max(...t).toFixed(0)}</b> BPM</span>`;
+  document.getElementById('statsBox').innerHTML=`<span class="stat-chip"><b>${allData.length}</b> tracks</span><span class="stat-chip">avg <b>${avg}</b> BPM</span><span class="stat-chip"><b>${Math.min(...t).toFixed(0)}</b>  <b>${Math.max(...t).toFixed(0)}</b> BPM</span>`;
 }
 
 function updateRange(){
@@ -830,7 +830,7 @@ function renderTable(){
       <td class="td-bar"><div class="bar-wrap"><div class="bar-fill" style="width:${(bpm/maxBPM*100).toFixed(1)}%;background:${color}"></div></div></td>
       <td class="td-title">
         <div class="track-row">
-          <img class="album-art loading" data-tid="${tid}" src="" alt="" onload="this.classList.remove('loading')" onerror="this.style.display='none'">
+          <img class="album-art ${artCache[tid]?'':'loading'}" data-tid="${tid}" src="${artCache[tid]||''}" alt="" onload="this.classList.remove('loading')" onerror="this.style.display='none'">
           <div>
             ${uri?`<a href="${uri}" class="track" style="text-decoration:none;color:inherit;display:block">${r['Track Name']}</a>`:`<div class="track">${r['Track Name']}</div>`}
             <div class="artist" style="display:flex;align-items:center;gap:0.4rem">
@@ -838,7 +838,7 @@ function renderTable(){
               <button onclick="toggleBlacklist('${(r['Artist Name(s)']||'').replace(/'/g,"\\'")}');event.stopPropagation()" 
                 style="background:none;border:none;cursor:pointer;font-size:0.7rem;padding:0 2px;opacity:0.5;color:${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'#ff6a6a':'var(--muted)'}" 
                 title="${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'เอาออกจาก blacklist':'เพิ่มใน blacklist'}">
-                ${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'🚫':'✕'}
+                ${(r['Artist Name(s)']||'').split(';').some(a=>blacklist.has(a.trim()))?'':''}
               </button>
             </div>
           </div>
@@ -846,7 +846,7 @@ function renderTable(){
       </td>
       <td class="td-mini"><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${(energy*100).toFixed(0)}%;background:#ff6a6a"></div></div><span>${(energy*100).toFixed(0)}</span></div></td>
       <td class="td-mini"><div class="mini-bar-wrap"><div class="mini-bar"><div class="mini-fill" style="width:${(dance*100).toFixed(0)}%;background:#7fff6a"></div></div><span>${(dance*100).toFixed(0)}</span></div></td>
-      <td><div class="key-badge" style="color:${ki.col};border-color:${ki.col}" title="${ki.n} — ${ki.c}"><span>${ki.n}</span><span class="camelot">${ki.c}</span></div></td>
+      <td><div class="key-badge" style="color:${ki.col};border-color:${ki.col}" title="${ki.n}  ${ki.c}"><span>${ki.n}</span><span class="camelot">${ki.c}</span></div></td>
     </tr>`;
   }).join('');
 }

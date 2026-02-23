@@ -150,16 +150,16 @@ input[type="range"]::-webkit-slider-thumb {
   <h1>SONG <span>EDITOR</span></h1>
   <div class="header-right">
     <span class="progress-text" id="progressText"></span>
-    <button class="btn btn-accent" id="exportBtn" onclick="exportCSV()" style="display:none;padding:0.4rem 0.9rem;font-size:0.7rem">⬇️ Export</button>
-    <button class="btn btn-ghost" id="reloadBtn" onclick="document.getElementById('reloadInput').click()" style="display:none;padding:0.4rem 0.9rem;font-size:0.7rem" title="โหลดไฟล์ CSV ใหม่โดยไม่ reset progress">🔄 โหลดไฟล์ใหม่</button>
+    <button class="btn btn-accent" id="exportBtn" onclick="exportCSV()" style="display:none;padding:0.4rem 0.9rem;font-size:0.7rem"> Export</button>
+    <button class="btn btn-ghost" id="reloadBtn" onclick="document.getElementById('reloadInput').click()" style="display:none;padding:0.4rem 0.9rem;font-size:0.7rem" title="โหลดไฟล์ CSV ใหม่โดยไม่ reset progress"> โหลดไฟล์ใหม่</button>
     <input type="file" id="reloadInput" accept=".csv" style="display:none" onchange="reloadCSV(event)">
-    <a href="bpm_viewer.html" class="btn btn-ghost">← Viewer</a>
+    <a href="bpm_viewer.html" class="btn btn-ghost"> Viewer</a>
   </div>
 </header>
 
 <div id="uploadSection">
   <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
-    <div class="icon">🎛️</div>
+    <div class="icon"></div>
     <p>คลิกเพื่ออัปโหลด CSV จาก Exportify</p>
     <p style="font-size:0.7rem;margin-top:0.4rem;opacity:0.6">หรือใช้ไฟล์จาก BPM Viewer ที่บันทึกไว้</p>
   </div>
@@ -180,8 +180,8 @@ input[type="range"]::-webkit-slider-thumb {
       <div class="bpm-section">
         <div class="bpm-display" id="bpmDisplay">-- <span>BPM</span></div>
         <div class="bpm-modes">
-          <div class="bpm-mode-btn active" onclick="setBpmMode('slider', this)">🎚 Slider</div>
-          <div class="bpm-mode-btn" onclick="setBpmMode('tap', this)">👆 Tap</div>
+          <div class="bpm-mode-btn active" onclick="setBpmMode('slider', this)"> Slider</div>
+          <div class="bpm-mode-btn" onclick="setBpmMode('tap', this)"> Tap</div>
         </div>
         <div id="bpmSliderWrap">
           <input type="range" id="bpmSlider" min="40" max="220" value="120"
@@ -190,7 +190,7 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
         <div id="bpmTapWrap" style="display:none">
           <button class="tap-btn" onclick="tapBpm()" onkeydown="if(event.code==='Space') tapBpm()">
-            🥁 แตะตามจังหวะ
+             แตะตามจังหวะ
           </button>
           <div class="tap-hint" id="tapHint">แตะอย่างน้อย 3 ครั้งเพื่อคำนวณ BPM</div>
           <button class="btn btn-ghost" style="width:100%;margin-top:0.5rem;font-size:0.7rem" onclick="resetTap()">reset tap</button>
@@ -234,19 +234,19 @@ input[type="range"]::-webkit-slider-thumb {
       </div>
 
       <div class="card-actions">
-        <button class="btn btn-ghost" id="prevBtn" onclick="prevSong()" style="flex:0 0 auto;padding:0.75rem 1rem" title="กลับเพลงก่อนหน้า">←</button>
-        <button class="btn btn-danger" onclick="skipSong()">✓ ข้ามได้</button>
-        <button class="btn btn-accent" onclick="saveSong()">💾 บันทึก & ต่อไป</button>
+        <button class="btn btn-ghost" id="prevBtn" onclick="prevSong()" style="flex:0 0 auto;padding:0.75rem 1rem" title="กลับเพลงก่อนหน้า"></button>
+        <button class="btn btn-danger" onclick="skipSong()"> ข้ามได้</button>
+        <button class="btn btn-accent" onclick="saveSong()"> บันทึก & ต่อไป</button>
       </div>
     </div>
   </div>
 </div>
 
 <div id="doneSection">
-  <div class="icon">🎉</div>
+  <div class="icon"></div>
   <h2>เสร็จแล้ว!</h2>
   <p id="doneText"></p>
-  <button class="btn btn-accent" onclick="exportCSV()" style="margin-bottom:0.75rem;width:100%;padding:0.75rem">⬇️ Export CSV</button>
+  <button class="btn btn-accent" onclick="exportCSV()" style="margin-bottom:0.75rem;width:100%;padding:0.75rem"> Export CSV</button>
   <button class="btn btn-ghost" onclick="restartEditor()" style="width:100%;padding:0.75rem">เริ่มใหม่</button>
 </div>
 
@@ -379,7 +379,7 @@ function getCurrentValues(){
 function updateExportBtn(){
   const n = Object.keys(edits).length;
   const btn = document.getElementById('exportBtn');
-  if(btn) btn.textContent = n > 0 ? `⬇️ Export (${n})` : '⬇️ Export';
+  if(btn) btn.textContent = n > 0 ? ` Export (${n})` : ' Export';
 }
 
 function prevSong(){
@@ -469,7 +469,7 @@ function tapBpm(){
 
   document.getElementById('bpmDisplay').innerHTML = `${clamped} <span>BPM</span>`;
   document.getElementById('bpmSlider').value = clamped;
-  document.getElementById('tapHint').textContent = `${tapTimes.length} taps — ${clamped} BPM`;
+  document.getElementById('tapHint').textContent = `${tapTimes.length} taps  ${clamped} BPM`;
 }
 
 function resetTap(){
