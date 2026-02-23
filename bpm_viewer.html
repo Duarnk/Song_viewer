@@ -739,7 +739,7 @@ async function fetchArt(tid){
   if(!tid) return '';
   if(artCache[tid] !== undefined) return artCache[tid];
   try {
-    const res = await fetch(`http://localhost:8080/oembed/${tid}`);
+    const res = await fetch(`/api/oembed?tid=${tid}`);
     if(res.ok){ 
       const d = await res.json(); 
       artCache[tid] = d.thumbnail_url;
