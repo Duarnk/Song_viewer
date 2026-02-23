@@ -737,7 +737,7 @@ const artCache = JSON.parse(localStorage.getItem('bpm_artcache')||'{}');
 
 async function fetchArt(tid){
   if(!tid) return '';
-  if(artCache[tid] !== undefined) return artCache[tid];
+  if(artCache[tid]) return artCache[tid];
   try {
     const res = await fetch(`/api/oembed?tid=${tid}`);
     if(res.ok){ 
