@@ -9,13 +9,10 @@
   :root { --bg:#0a0a0f;--surface:#12121a;--border:#1e1e2e;--accent:#7fff6a;--text:#e8e8f0;--muted:#555570;--slow:#4a9eff;--mid:#7fff6a;--fast:#ff6a6a; }
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);color:var(--text);font-family:'Noto Sans Thai','Space Mono',monospace;min-height:100vh;padding:2rem}
-  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);gap:1rem}
-  .header-left{display:flex;flex-direction:column;gap:0.5rem}
+  header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border)}
   h1{font-family:'Space Mono',monospace;font-size:2rem;letter-spacing:-0.02em}
   h1 span{color:var(--accent)}
-  .stats{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center}
-  .stat-chip{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:0.25rem 0.6rem;border-radius:20px;white-space:nowrap}
-  .stat-chip b{color:var(--accent);font-weight:700}
+  .stats{font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);text-align:right;line-height:1.8}
   .upload-zone{border:2px dashed var(--border);border-radius:8px;padding:3rem;text-align:center;margin:4rem auto;max-width:500px;cursor:pointer;transition:border-color 0.2s}
   .upload-zone:hover{border-color:var(--accent)}
   .upload-zone p{color:var(--muted);font-family:'Space Mono',monospace;font-size:0.85rem;margin-top:0.75rem}
@@ -81,63 +78,12 @@
   .progress-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
   .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width 0.15s;width:0%}
   .progress-label{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:0.4rem}
-  #mosaicGrid{display:none;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:4px}
-  .mosaic-item{position:relative;aspect-ratio:1;overflow:hidden;border-radius:4px;cursor:pointer;background:var(--border)}
-  .mosaic-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.2s}
-  .mosaic-item:hover img{transform:scale(1.05)}
-  .mosaic-item .mosaic-info{position:absolute;inset:0;background:rgba(0,0,0,0.75);opacity:0;transition:opacity 0.2s;display:flex;flex-direction:column;justify-content:flex-end;padding:0.6rem;backdrop-filter:blur(4px)}
-  .mosaic-item:hover .mosaic-info{opacity:1}
-  .mosaic-info .m-track{font-size:0.7rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2}
-  .mosaic-info .m-bpm{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--accent)}
-  #galaxyWrap{display:none;position:relative;width:100%;height:70vh;border-radius:8px;overflow:hidden;background:#05050f;border:1px solid var(--border)}
-
-  /* Flow */
-  #flowWrap{display:none;position:relative;width:100%;height:75vh;overflow:hidden;background:#05050f;border-radius:8px;border:1px solid var(--border)}
-  .flow-item{position:absolute;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;border-radius:8px;overflow:hidden}
-  .flow-item img{width:100%;height:100%;object-fit:cover;display:block}
-  .flow-item:hover{transform:scale(1.08) !important;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:10}
-  .flow-item .flow-info{position:absolute;bottom:0;left:0;right:0;padding:0.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.85));opacity:0;transition:opacity 0.2s}
-  .flow-item:hover .flow-info{opacity:1}
-  .flow-info .f-track{font-size:0.65rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .flow-info .f-bpm{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--accent)}
-
-  /* Stack */
-  #stackWrap{display:none;width:100%;min-height:60vh;display:none;flex-direction:column;align-items:center;gap:2rem;padding:2rem 0}
-  #stackInner{position:relative;width:240px;height:240px;cursor:pointer}
-  .stack-card{position:absolute;width:200px;height:200px;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1)}
-  .stack-card img{width:100%;height:100%;object-fit:cover}
-  #stackDetail{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;width:100%;max-width:400px;text-align:center}
-  #stackDetail .sd-art{width:120px;height:120px;border-radius:8px;object-fit:cover;margin:0 auto 1rem}
-  #stackDetail .sd-track{font-size:1.1rem;font-weight:700;margin-bottom:0.25rem}
-  #stackDetail .sd-artist{font-size:0.8rem;color:var(--muted);margin-bottom:1rem}
-  #stackDetail .sd-stats{display:flex;gap:1rem;justify-content:center;font-family:'Space Mono',monospace;font-size:0.75rem}
-
-  /* Screensaver */
-  #ssWrap{display:none;position:fixed;inset:0;background:#000;z-index:9999;cursor:pointer}
-  #ssWrap .ss-art{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 1.5s ease-in-out}
-  #ssWrap .ss-blur{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(40px) brightness(0.3);transform:scale(1.1)}
-  #ssWrap .ss-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:280px;height:280px;border-radius:16px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
-  #ssWrap .ss-info{position:absolute;bottom:10%;left:50%;transform:translateX(-50%);text-align:center;color:#fff}
-  #ssWrap .ss-track{font-size:1.5rem;font-weight:700;margin-bottom:0.4rem;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
-  #ssWrap .ss-artist{font-size:0.9rem;opacity:0.7;margin-bottom:0.5rem}
-  #ssWrap .ss-bpm{font-family:'Space Mono',monospace;font-size:1rem;color:var(--accent)}
-  #ssWrap .ss-exit{position:absolute;top:2rem;right:2rem;font-family:'Space Mono',monospace;font-size:0.75rem;color:rgba(255,255,255,0.4)}
-  #galaxyCanvas{width:100%;height:100%;cursor:grab}
-  #galaxyCanvas:active{cursor:grabbing}
-  #galaxyTooltip{position:absolute;pointer-events:none;display:none;background:rgba(10,10,20,0.92);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;max-width:180px;backdrop-filter:blur(8px)}
-  #galaxyTooltip img{width:48px;height:48px;border-radius:4px;object-fit:cover;margin-bottom:0.4rem;display:block}
-  #galaxyTooltip .g-track{font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:2px}
-  #galaxyTooltip .g-artist{font-size:0.65rem;color:var(--muted);margin-bottom:4px}
-  #galaxyTooltip .g-bpm{font-family:'Space Mono',monospace;font-size:0.7rem;color:var(--accent)}
-  .view-opt{padding:0.6rem 1rem;font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);cursor:pointer;transition:all 0.1s;white-space:nowrap}
-  .view-opt:hover{background:var(--border);color:var(--text)}
-  .view-opt.active{color:var(--accent)}
 </style>
 </head>
 <body>
 
 <div id="uploadSection">
-  <header><h1>BPM <span>VIEWER</span></h1></header>
+  <header style="justify-content:flex-start"><h1>BPM <span>VIEWER</span></h1></header>
   <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
     <div class="icon">🎵</div>
     <p>คลิกเพื่ออัปโหลดไฟล์ CSV จาก Exportify</p>
@@ -148,18 +94,13 @@
 
 <div id="mainContent">
   <header>
-    <div class="header-left">
-      <h1>SONG <span>VIEWER</span></h1>
-      <div class="stats" id="statsBox"></div>
-    </div>
+    <h1>BPM <span>VIEWER</span></h1>
+    <div class="stats" id="statsBox"></div>
     <a href="editor.html" style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:0.4rem 0.75rem;border-radius:4px;transition:all 0.15s" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">🎛 Editor</a>
   </header>
   <div class="saved-bar" id="savedBar">
     <span id="savedName"></span>
-    <input type="file" id="reloadInput" accept=".csv" style="display:none" onchange="reloadCSV(event)">
-    <button class="btn-clear" onclick="document.getElementById('reloadInput').click()" style="border-color:var(--accent);color:var(--accent)">🔄 Reload</button>
     <button class="btn-clear" onclick="clearCSV()">เปลี่ยนไฟล์</button>
-    <button class="btn-clear" onclick="clearArtCache()" title="ล้าง cache รูปปกอัลบั้ม แล้วโหลดใหม่">🖼️ ล้าง cache รูป</button>
   </div>
 
   <div class="mood-row">
@@ -171,19 +112,8 @@
     <button class="mood-btn" onclick="setMood('dance',this)">🕺 เต้นได้</button>
     <button class="mood-btn" onclick="setMood('dark',this)">🌑 มืดหม่น</button>
     <button class="mood-btn" onclick="setMood('acoustic',this)">🎸 Acoustic</button>
-    <button class="mood-btn" onclick="randomSong()" style="margin-left:auto;border-color:#ff6a6a;color:#ff6a6a">สุ่มเพลง</button>
-    <button class="mood-btn" onclick="startQuiz()" style="border-color:#4a9eff;color:#4a9eff">Quiz</button>
-    <div style="position:relative">
-      <button class="mood-btn" id="viewModeBtn" onclick="toggleViewDropdown()" style="border-color:#9b59b6;color:#9b59b6">View: Table ▾</button>
-      <div id="viewDropdown" style="display:none;position:absolute;right:0;top:110%;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;z-index:100;min-width:140px">
-        <div class="view-opt" onclick="setViewMode('table')">Table</div>
-        <div class="view-opt" onclick="setViewMode('mosaic')">Mosaic</div>
-        <div class="view-opt" onclick="setViewMode('galaxy')">Galaxy</div>
-        <div class="view-opt" onclick="setViewMode('flow')">Flow</div>
-        <div class="view-opt" onclick="setViewMode('stack')">Stack</div>
-        <div class="view-opt" onclick="setViewMode('screensaver')">Screensaver</div>
-      </div>
-    </div>
+    <button class="mood-btn" onclick="randomSong()" style="margin-left:auto;border-color:#ff6a6a;color:#ff6a6a">🎲 สุ่มเพลง</button>
+    <button class="mood-btn" onclick="startQuiz()" style="border-color:#4a9eff;color:#4a9eff">🎯 Quiz</button>
   </div>
 
   <div id="quizSection" style="display:none;margin-bottom:1.5rem">
@@ -258,22 +188,6 @@
     <tbody id="tableBody"></tbody>
   </table>
   <div id="noResult" class="no-result" style="display:none">ไม่พบเพลงที่ค้นหา</div>
-  <div id="mosaicGrid" style="display:none"></div>
-  <div id="galaxyWrap" style="display:none">
-    <canvas id="galaxyCanvas"></canvas>
-    <div id="galaxyTooltip">
-      <img id="gTipArt" src="" alt="">
-      <div class="g-track" id="gTipTrack"></div>
-      <div class="g-artist" id="gTipArtist"></div>
-      <div class="g-bpm" id="gTipBpm"></div>
-    </div>
-  </div>
-  <div id="flowWrap" style="display:none"></div>
-  <div id="stackWrap" style="display:none">
-    <div id="stackInner"></div>
-    <div id="stackDetail" style="display:none"></div>
-  </div>
-  <div id="ssWrap" style="display:none"></div>
 </div>
 
 <script>
@@ -354,185 +268,6 @@ function setMood(mood,btn){
   filterTable();
 }
 
-let mosaicMode = false;
-let currentView = 'table'; // table | mosaic | galaxy
-let galaxyAnimId = null;
-
-function toggleViewDropdown(){
-  const d = document.getElementById('viewDropdown');
-  d.style.display = d.style.display === 'none' ? 'block' : 'none';
-}
-document.addEventListener('click', e => {
-  if(!e.target.closest('#viewModeBtn') && !e.target.closest('#viewDropdown'))
-    document.getElementById('viewDropdown').style.display = 'none';
-});
-
-function setViewMode(mode){
-  currentView = mode;
-  document.getElementById('viewDropdown').style.display = 'none';
-  document.querySelectorAll('.view-opt').forEach(o => o.classList.remove('active'));
-  document.querySelector(`.view-opt[onclick="setViewMode('${mode}')"]`).classList.add('active');
-
-  const labels = { table:'Table', mosaic:'Mosaic', galaxy:'Galaxy', flow:'Flow', stack:'Stack', screensaver:'Screensaver' };
-  document.getElementById('viewModeBtn').textContent = 'View: ' + labels[mode] + ' ▾';
-
-  // stop animations
-  if(galaxyAnimId){ cancelAnimationFrame(galaxyAnimId); galaxyAnimId = null; }
-  stopFlow(); stopStack(); stopScreensaver();
-
-  document.getElementById('mainTable').style.display = 'none';
-  document.getElementById('mosaicGrid').style.display = 'none';
-  document.getElementById('galaxyWrap').style.display = 'none';
-  document.getElementById('flowWrap').style.display = 'none';
-  document.getElementById('stackWrap').style.display = 'none';
-  document.getElementById('ssWrap').style.display = 'none';
-
-  if(mode === 'table'){
-    document.getElementById('mainTable').style.display = filtered.length ? 'table' : 'none';
-  } else if(mode === 'mosaic'){
-    document.getElementById('mosaicGrid').style.display = 'grid';
-    renderMosaic();
-  } else if(mode === 'galaxy'){
-    document.getElementById('galaxyWrap').style.display = 'block';
-    requestAnimationFrame(renderGalaxy);
-  } else if(mode === 'flow'){
-    document.getElementById('flowWrap').style.display = 'block';
-    startFlow();
-  } else if(mode === 'stack'){
-    document.getElementById('stackWrap').style.display = 'flex';
-    startStack();
-  } else if(mode === 'screensaver'){
-    startScreensaver();
-  }
-}
-
-function renderMosaic(){
-  const grid = document.getElementById('mosaicGrid');
-  grid.innerHTML = filtered.map(r => {
-    const tid = (r['Track URI']||'').replace('spotify:track:','');
-    const src = artCache[tid] || '';
-    const bpm = v(r,'Tempo').toFixed(1);
-    const uri = tid ? `spotify:track:${tid}` : '';
-    return `<div class="mosaic-item" onclick="${uri?`openSpotify('${uri}')`:''}" >
-        <img src="${src}" alt="" onerror="this.style.display='none'">
-        <div class="mosaic-info">
-          <div class="m-track">${r['Track Name']}</div>
-          <div class="m-bpm">${bpm} BPM</div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-// --- Galaxy ---
-function renderGalaxy(){
-  const wrap = document.getElementById('galaxyWrap');
-  const canvas = document.getElementById('galaxyCanvas');
-  const W = wrap.clientWidth, H = wrap.clientHeight;
-  canvas.width = W; canvas.height = H;
-  const ctx = canvas.getContext('2d');
-
-  const tempos = filtered.map(r => v(r,'Tempo')).filter(Boolean);
-  const energies = filtered.map(r => v(r,'Energy')).filter(Boolean);
-  const tMin = Math.min(...tempos), tMax = Math.max(...tempos);
-  const eMin = Math.min(...energies), eMax = Math.max(...energies);
-
-  const pad = 48;
-  const stars = filtered.map(r => {
-    const tid = (r['Track URI']||'').replace('spotify:track:','');
-    const bpm = v(r,'Tempo');
-    const energy = v(r,'Energy');
-    const valence = v(r,'Valence');
-    const x = pad + ((bpm - tMin) / (tMax - tMin || 1)) * (W - pad*2);
-    const y = H - pad - ((energy - eMin) / (eMax - eMin || 1)) * (H - pad*2);
-    // สี: valence สูง = เขียว/ฟ้า, ต่ำ = แดง/ม่วง
-    const hue = Math.round(valence * 200 + 180);
-    return { r, tid, x, y, hue, bpm, energy };
-  });
-
-  let hoveredStar = null;
-  let offsetX = 0, offsetY = 0, scale = 1;
-  let dragging = false, dragStart = null;
-
-  function draw(){
-    ctx.clearRect(0, 0, W, H);
-    // bg stars (decoration)
-    ctx.save();
-    ctx.translate(offsetX, offsetY);
-    ctx.scale(scale, scale);
-
-    // axis labels
-    ctx.font = '10px Space Mono, monospace';
-    ctx.fillStyle = '#555570';
-    ctx.fillText('BPM', W/2 - 16, H - 8);
-    ctx.save(); ctx.translate(10, H/2); ctx.rotate(-Math.PI/2);
-    ctx.fillText('Energy', 0, 0); ctx.restore();
-
-    stars.forEach(s => {
-      const isHovered = hoveredStar === s;
-      const r = isHovered ? 7 : 4;
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, r, 0, Math.PI*2);
-      ctx.fillStyle = `hsl(${s.hue},80%,${isHovered?75:55}%)`;
-      if(isHovered){ ctx.shadowColor = `hsl(${s.hue},80%,60%)`; ctx.shadowBlur = 12; }
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    });
-    ctx.restore();
-  }
-
-  function getHovered(mx, my){
-    for(const s of stars){
-      const sx = s.x * scale + offsetX;
-      const sy = s.y * scale + offsetY;
-      if(Math.hypot(mx-sx, my-sy) < 10) return s;
-    }
-    return null;
-  }
-
-  canvas.onmousemove = e => {
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-    if(dragging){
-      offsetX += mx - dragStart.x; offsetY += my - dragStart.y;
-      dragStart = {x:mx, y:my};
-      draw(); return;
-    }
-    hoveredStar = getHovered(mx, my);
-    const tip = document.getElementById('galaxyTooltip');
-    if(hoveredStar){
-      document.getElementById('gTipTrack').textContent = hoveredStar.r['Track Name'];
-      document.getElementById('gTipArtist').textContent = hoveredStar.r['Artist Name(s)']||'';
-      document.getElementById('gTipBpm').textContent = hoveredStar.bpm.toFixed(1)+' BPM · Energy '+Math.round(hoveredStar.energy*100)+'%';
-      document.getElementById('gTipArt').src = artCache[hoveredStar.tid]||'';
-      tip.style.display = 'block';
-      tip.style.left = (mx+16)+'px'; tip.style.top = (my-16)+'px';
-    } else {
-      tip.style.display = 'none';
-    }
-    draw();
-  };
-
-  canvas.onmousedown = e => {
-    const rect = canvas.getBoundingClientRect();
-    dragging = true;
-    dragStart = {x: e.clientX-rect.left, y: e.clientY-rect.top};
-  };
-  canvas.onmouseup = () => dragging = false;
-  canvas.onmouseleave = () => { dragging = false; document.getElementById('galaxyTooltip').style.display='none'; };
-  canvas.onclick = e => {
-    const rect = canvas.getBoundingClientRect();
-    const s = getHovered(e.clientX-rect.left, e.clientY-rect.top);
-    if(s && s.tid) openSpotify('spotify:track:'+s.tid);
-  };
-  canvas.onwheel = e => {
-    e.preventDefault();
-    scale = Math.max(0.5, Math.min(4, scale - e.deltaY*0.001));
-    draw();
-  };
-
-  draw();
-}
-
 function loadCSV(e){
   const file=e.target.files[0];
   if(!file)return;
@@ -544,20 +279,6 @@ function loadCSV(e){
     initData(text);
   };
   reader.readAsText(file,'UTF-8');
-}
-
-function reloadCSV(e){
-  const file=e.target.files[0];
-  if(!file)return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const text=ev.target.result.replace(/^\uFEFF/,'');
-    localStorage.setItem('bpm_csv', text);
-    localStorage.setItem('bpm_csv_name', file.name);
-    initData(text);
-  };
-  reader.readAsText(file,'UTF-8');
-  e.target.value=''; // reset ให้เลือกไฟล์ชื่อเดิมซ้ำได้
 }
 
 function initData(text){
@@ -703,153 +424,7 @@ function answerQuiz(choice, btn){
   setTimeout(nextQuestion, 1800);
 }
 
-// ==================== FLOW ====================
-let flowItems = [], flowAnimId = null;
-function startFlow(){
-  const wrap = document.getElementById('flowWrap');
-  wrap.innerHTML = '';
-  const W = wrap.clientWidth, H = wrap.clientHeight;
-  const pool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
-  const count = Math.min(pool.length, 30);
-  flowItems = Array.from({length: count}, (_, i) => {
-    const r = pool[i % pool.length];
-    const tid = (r['Track URI']||'').replace('spotify:track:','');
-    const size = 80 + Math.random()*80;
-    const el = document.createElement('div');
-    el.className = 'flow-item';
-    el.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*W}px;top:${Math.random()*H}px`;
-    el.innerHTML = `<img src="${artCache[tid]}" alt=""><div class="flow-info"><div class="f-track">${r['Track Name']}</div><div class="f-bpm">${v(r,'Tempo').toFixed(0)} BPM</div></div>`;
-    const tid2 = tid;
-    el.onclick = () => { if(tid2) openSpotify('spotify:track:'+tid2); };
-    wrap.appendChild(el);
-    return {
-      el, x: parseFloat(el.style.left), y: parseFloat(el.style.top),
-      vx: (Math.random()-0.5)*0.4,
-      vy: (Math.random()-0.5)*0.4,
-      size, W, H
-    };
-  });
-  animateFlow();
-}
-
-function animateFlow(){
-  flowAnimId = requestAnimationFrame(animateFlow);
-  const wrap = document.getElementById('flowWrap');
-  const W = wrap.clientWidth, H = wrap.clientHeight;
-  flowItems.forEach(item => {
-    item.x += item.vx;
-    item.y += item.vy;
-    if(item.x < -item.size) item.x = W;
-    if(item.x > W) item.x = -item.size;
-    if(item.y < -item.size) item.y = H;
-    if(item.y > H) item.y = -item.size;
-    item.el.style.left = item.x + 'px';
-    item.el.style.top = item.y + 'px';
-  });
-}
-function stopFlow(){ if(flowAnimId){ cancelAnimationFrame(flowAnimId); flowAnimId = null; } }
-
-// ==================== STACK ====================
-let stackPool = [], stackIdx = 0;
-function startStack(){
-  stackPool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
-  stackIdx = 0;
-  renderStack();
-}
-
-function renderStack(){
-  const inner = document.getElementById('stackInner');
-  const detail = document.getElementById('stackDetail');
-  inner.innerHTML = '';
-  if(!stackPool.length) return;
-
-  // โช 5 การ์ดซ้อนกัน
-  const cards = 5;
-  for(let i = cards-1; i >= 0; i--){
-    const r = stackPool[(stackIdx + i) % stackPool.length];
-    const tid = (r['Track URI']||'').replace('spotify:track:','');
-    const card = document.createElement('div');
-    card.className = 'stack-card';
-    card.style.cssText = `
-      left: ${i*8}px; top: ${i*-6}px;
-      transform: rotate(${(i-2)*3}deg);
-      z-index: ${cards-i};
-      opacity: ${1 - i*0.15};
-    `;
-    card.innerHTML = `<img src="${artCache[tid]||''}" alt="">`;
-    if(i === 0){
-      card.onclick = () => {
-        stackIdx = (stackIdx+1) % stackPool.length;
-        renderStack();
-      };
-    }
-    inner.appendChild(card);
-  }
-
-  // โช detail ของการ์ดบนสุด
-  const r = stackPool[stackIdx % stackPool.length];
-  const tid = (r['Track URI']||'').replace('spotify:track:','');
-  detail.style.display = 'block';
-  detail.innerHTML = `
-    <img class="sd-art" src="${artCache[tid]||''}" alt="">
-    <div class="sd-track">${r['Track Name']}</div>
-    <div class="sd-artist">${r['Artist Name(s)']||''}</div>
-    <div class="sd-stats">
-      <span style="color:var(--accent)">${v(r,'Tempo').toFixed(1)} BPM</span>
-      <span style="color:#ff6a6a">Energy ${Math.round(v(r,'Energy')*100)}%</span>
-      <span style="color:#f1c40f">Valence ${Math.round(v(r,'Valence')*100)}%</span>
-    </div>
-    ${tid?`<button onclick="openSpotify('spotify:track:${tid}')" style="margin-top:1rem;background:none;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;font-family:'Space Mono',monospace;font-size:0.7rem;border-radius:4px;cursor:pointer">Open in Spotify</button>`:''}
-  `;
-}
-function stopStack(){}
-
-// ==================== SCREENSAVER ====================
-let ssTimer = null, ssIdx = 0, ssPool = [];
-function startScreensaver(){
-  ssPool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
-  if(!ssPool.length) return;
-  ssIdx = Math.floor(Math.random() * ssPool.length);
-  const wrap = document.getElementById('ssWrap');
-  wrap.style.display = 'block';
-  wrap.innerHTML = `
-    <div class="ss-blur" id="ssBlur"></div>
-    <img class="ss-img" id="ssImg" src="" alt="">
-    <div class="ss-info">
-      <div class="ss-track" id="ssTrack"></div>
-      <div class="ss-artist" id="ssArtist"></div>
-      <div class="ss-bpm" id="ssBpm"></div>
-    </div>
-    <div class="ss-exit">กด ESC หรือคลิกเพื่อออก</div>
-  `;
-  wrap.onclick = stopScreensaver;
-  document.addEventListener('keydown', ssKeyHandler);
-  showSSSlide();
-  ssTimer = setInterval(() => {
-    ssIdx = (ssIdx+1) % ssPool.length;
-    showSSSlide();
-  }, 4000);
-}
-
-function showSSSlide(){
-  const r = ssPool[ssIdx];
-  const tid = (r['Track URI']||'').replace('spotify:track:','');
-  const src = artCache[tid]||'';
-  document.getElementById('ssBlur').style.backgroundImage = `url(${src})`;
-  document.getElementById('ssImg').src = src;
-  document.getElementById('ssTrack').textContent = r['Track Name'];
-  document.getElementById('ssArtist').textContent = r['Artist Name(s)']||'';
-  document.getElementById('ssBpm').textContent = v(r,'Tempo').toFixed(1)+' BPM';
-}
-
-function ssKeyHandler(e){ if(e.key==='Escape') stopScreensaver(); }
-
-function stopScreensaver(){
-  if(ssTimer){ clearInterval(ssTimer); ssTimer = null; }
-  document.removeEventListener('keydown', ssKeyHandler);
-  document.getElementById('ssWrap').style.display = 'none';
-  if(currentView === 'screensaver') setViewMode('table');
-}
+function clearCSV(){
   localStorage.removeItem('bpm_csv');
   localStorage.removeItem('bpm_csv_name');
   location.reload();
@@ -889,7 +464,7 @@ function parseLine(line){
 function updateStats(){
   const t=allData.map(r=>v(r,'Tempo')).filter(Boolean);
   const avg=(t.reduce((a,b)=>a+b,0)/t.length).toFixed(1);
-  document.getElementById('statsBox').innerHTML=`<span class="stat-chip"><b>${allData.length}</b> tracks</span><span class="stat-chip">avg <b>${avg}</b> BPM</span><span class="stat-chip"><b>${Math.min(...t).toFixed(0)}</b> – <b>${Math.max(...t).toFixed(0)}</b> BPM</span>`;
+  document.getElementById('statsBox').innerHTML=`${allData.length} tracks &nbsp;|&nbsp; avg ${avg} BPM<br>${Math.min(...t).toFixed(0)} – ${Math.max(...t).toFixed(0)} BPM`;
 }
 
 function updateRange(){
@@ -929,39 +504,16 @@ function filterTable(){
     return sortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
   });
   renderTable();
-  loadAlbumArt().then(() => {
-    if(currentView === 'mosaic') renderMosaic();
-    else if(currentView === 'galaxy') renderGalaxy();
-    else if(currentView === 'flow'){ stopFlow(); startFlow(); }
-    else if(currentView === 'stack') startStack();
-  });
+  loadAlbumArt();
 }
 
-function clearArtCache(){
-  localStorage.removeItem('bpm_artcache');
-  localStorage.removeItem('bpm_artcache_ver');
-  Object.keys(artCache).forEach(k => delete artCache[k]);
-  loadAlbumArt().then(() => {
-    if(currentView === 'mosaic') renderMosaic();
-    else if(currentView === 'galaxy') renderGalaxy();
-    else if(currentView === 'flow'){ stopFlow(); startFlow(); }
-    else if(currentView === 'stack') startStack();
-  });
-  alert('ล้าง cache รูปแล้ว! กำลังโหลดใหม่...');
-}
-
-const CACHE_VERSION = 'v2';
-if(localStorage.getItem('bpm_artcache_ver') !== CACHE_VERSION){
-  localStorage.removeItem('bpm_artcache');
-  localStorage.setItem('bpm_artcache_ver', CACHE_VERSION);
-}
 const artCache = JSON.parse(localStorage.getItem('bpm_artcache')||'{}');
 
 async function fetchArt(tid){
   if(!tid) return '';
-  if(artCache[tid]) return artCache[tid];
+  if(artCache[tid] !== undefined) return artCache[tid];
   try {
-    const res = await fetch(`/api/oembed?tid=${tid}`);
+    const res = await fetch(`http://localhost:8080/oembed/${tid}`);
     if(res.ok){ 
       const d = await res.json(); 
       artCache[tid] = d.thumbnail_url;
