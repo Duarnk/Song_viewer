@@ -89,10 +89,9 @@
   .mosaic-item:hover .mosaic-info{opacity:1}
   .mosaic-info .m-track{font-size:0.7rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2}
   .mosaic-info .m-bpm{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--accent)}
-  .mosaic-item .ripple-ring{position:absolute;inset:0;border-radius:4px;pointer-events:none;box-shadow:0 0 0 0px rgba(127,255,106,0);transition:box-shadow 0s}
-  .mosaic-item.ripple-1 .ripple-ring{box-shadow:0 0 0 6px rgba(127,255,106,0.35);transition:box-shadow 0.35s ease-out}
-  .mosaic-item.ripple-2 .ripple-ring{box-shadow:0 0 0 10px rgba(127,255,106,0.2);transition:box-shadow 0.5s ease-out}
-  .mosaic-item.ripple-3 .ripple-ring{box-shadow:0 0 0 14px rgba(127,255,106,0.08);transition:box-shadow 0.65s ease-out}
+  .mosaic-item.ripple-1{outline:4px solid rgba(127,255,106,0.6);outline-offset:0px;transition:outline 0.4s ease-out}
+  .mosaic-item.ripple-2{outline:3px solid rgba(127,255,106,0.35);outline-offset:2px;transition:outline 0.5s ease-out}
+  .mosaic-item.ripple-3{outline:2px solid rgba(127,255,106,0.15);outline-offset:4px;transition:outline 0.65s ease-out}
   #galaxyWrap{display:none;position:relative;width:100%;height:70vh;border-radius:8px;overflow:hidden;background:#05050f;border:1px solid var(--border)}
   #galaxyCanvas{width:100%;height:100%;cursor:grab}
   #galaxyCanvas:active{cursor:grabbing}
@@ -362,8 +361,7 @@ function renderMosaic(){
     const src = artCache[tid] || '';
     const bpm = v(r,'Tempo').toFixed(1);
     const uri = tid ? `spotify:track:${tid}` : '';
-    return `<div class="mosaic-item" data-idx="${i}" onclick="${uri?`openSpotify('${uri}')`:''}" onmouseenter="triggerRipple(${i})">
-        <div class="ripple-ring"></div>
+    return `<div class="mosaic-item" data-idx="${i}" onclick="triggerRipple(${i});${uri?`openSpotify('${uri}')`:''}" onmouseenter="triggerRipple(${i})">
         <img src="${src}" alt="" onerror="this.style.display='none'">
         <div class="mosaic-info">
           <div class="m-track">${r['Track Name']}</div>
