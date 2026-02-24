@@ -850,6 +850,8 @@ function stopScreensaver(){
   document.getElementById('ssWrap').style.display = 'none';
   if(currentView === 'screensaver') setViewMode('table');
 }
+
+function clearCSV(){
   localStorage.removeItem('bpm_csv');
   localStorage.removeItem('bpm_csv_name');
   location.reload();
