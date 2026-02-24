@@ -90,6 +90,38 @@
   .mosaic-info .m-track{font-size:0.7rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-clamp:2}
   .mosaic-info .m-bpm{font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--accent)}
   #galaxyWrap{display:none;position:relative;width:100%;height:70vh;border-radius:8px;overflow:hidden;background:#05050f;border:1px solid var(--border)}
+
+  /* Flow */
+  #flowWrap{display:none;position:relative;width:100%;height:75vh;overflow:hidden;background:#05050f;border-radius:8px;border:1px solid var(--border)}
+  .flow-item{position:absolute;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;border-radius:8px;overflow:hidden}
+  .flow-item img{width:100%;height:100%;object-fit:cover;display:block}
+  .flow-item:hover{transform:scale(1.08) !important;box-shadow:0 8px 32px rgba(0,0,0,0.6);z-index:10}
+  .flow-item .flow-info{position:absolute;bottom:0;left:0;right:0;padding:0.5rem;background:linear-gradient(transparent,rgba(0,0,0,0.85));opacity:0;transition:opacity 0.2s}
+  .flow-item:hover .flow-info{opacity:1}
+  .flow-info .f-track{font-size:0.65rem;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .flow-info .f-bpm{font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--accent)}
+
+  /* Stack */
+  #stackWrap{display:none;width:100%;min-height:60vh;display:none;flex-direction:column;align-items:center;gap:2rem;padding:2rem 0}
+  #stackInner{position:relative;width:240px;height:240px;cursor:pointer}
+  .stack-card{position:absolute;width:200px;height:200px;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.5);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+  .stack-card img{width:100%;height:100%;object-fit:cover}
+  #stackDetail{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;width:100%;max-width:400px;text-align:center}
+  #stackDetail .sd-art{width:120px;height:120px;border-radius:8px;object-fit:cover;margin:0 auto 1rem}
+  #stackDetail .sd-track{font-size:1.1rem;font-weight:700;margin-bottom:0.25rem}
+  #stackDetail .sd-artist{font-size:0.8rem;color:var(--muted);margin-bottom:1rem}
+  #stackDetail .sd-stats{display:flex;gap:1rem;justify-content:center;font-family:'Space Mono',monospace;font-size:0.75rem}
+
+  /* Screensaver */
+  #ssWrap{display:none;position:fixed;inset:0;background:#000;z-index:9999;cursor:pointer}
+  #ssWrap .ss-art{position:absolute;inset:0;background-size:cover;background-position:center;transition:opacity 1.5s ease-in-out}
+  #ssWrap .ss-blur{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(40px) brightness(0.3);transform:scale(1.1)}
+  #ssWrap .ss-img{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:280px;height:280px;border-radius:16px;object-fit:cover;box-shadow:0 20px 60px rgba(0,0,0,0.8)}
+  #ssWrap .ss-info{position:absolute;bottom:10%;left:50%;transform:translateX(-50%);text-align:center;color:#fff}
+  #ssWrap .ss-track{font-size:1.5rem;font-weight:700;margin-bottom:0.4rem;text-shadow:0 2px 12px rgba(0,0,0,0.8)}
+  #ssWrap .ss-artist{font-size:0.9rem;opacity:0.7;margin-bottom:0.5rem}
+  #ssWrap .ss-bpm{font-family:'Space Mono',monospace;font-size:1rem;color:var(--accent)}
+  #ssWrap .ss-exit{position:absolute;top:2rem;right:2rem;font-family:'Space Mono',monospace;font-size:0.75rem;color:rgba(255,255,255,0.4)}
   #galaxyCanvas{width:100%;height:100%;cursor:grab}
   #galaxyCanvas:active{cursor:grabbing}
   #galaxyTooltip{position:absolute;pointer-events:none;display:none;background:rgba(10,10,20,0.92);border:1px solid var(--border);border-radius:8px;padding:0.6rem 0.75rem;max-width:180px;backdrop-filter:blur(8px)}
@@ -147,6 +179,9 @@
         <div class="view-opt" onclick="setViewMode('table')">Table</div>
         <div class="view-opt" onclick="setViewMode('mosaic')">Mosaic</div>
         <div class="view-opt" onclick="setViewMode('galaxy')">Galaxy</div>
+        <div class="view-opt" onclick="setViewMode('flow')">Flow</div>
+        <div class="view-opt" onclick="setViewMode('stack')">Stack</div>
+        <div class="view-opt" onclick="setViewMode('screensaver')">Screensaver</div>
       </div>
     </div>
   </div>
@@ -233,6 +268,12 @@
       <div class="g-bpm" id="gTipBpm"></div>
     </div>
   </div>
+  <div id="flowWrap" style="display:none"></div>
+  <div id="stackWrap" style="display:none">
+    <div id="stackInner"></div>
+    <div id="stackDetail" style="display:none"></div>
+  </div>
+  <div id="ssWrap" style="display:none"></div>
 </div>
 
 <script>
@@ -332,13 +373,19 @@ function setViewMode(mode){
   document.querySelectorAll('.view-opt').forEach(o => o.classList.remove('active'));
   document.querySelector(`.view-opt[onclick="setViewMode('${mode}')"]`).classList.add('active');
 
-  const labels = { table: 'Table', mosaic: 'Mosaic', galaxy: 'Galaxy' };
+  const labels = { table:'Table', mosaic:'Mosaic', galaxy:'Galaxy', flow:'Flow', stack:'Stack', screensaver:'Screensaver' };
   document.getElementById('viewModeBtn').textContent = 'View: ' + labels[mode] + ' ▾';
+
+  // stop animations
+  if(galaxyAnimId){ cancelAnimationFrame(galaxyAnimId); galaxyAnimId = null; }
+  stopFlow(); stopStack(); stopScreensaver();
 
   document.getElementById('mainTable').style.display = 'none';
   document.getElementById('mosaicGrid').style.display = 'none';
   document.getElementById('galaxyWrap').style.display = 'none';
-  if(galaxyAnimId){ cancelAnimationFrame(galaxyAnimId); galaxyAnimId = null; }
+  document.getElementById('flowWrap').style.display = 'none';
+  document.getElementById('stackWrap').style.display = 'none';
+  document.getElementById('ssWrap').style.display = 'none';
 
   if(mode === 'table'){
     document.getElementById('mainTable').style.display = filtered.length ? 'table' : 'none';
@@ -348,6 +395,14 @@ function setViewMode(mode){
   } else if(mode === 'galaxy'){
     document.getElementById('galaxyWrap').style.display = 'block';
     requestAnimationFrame(renderGalaxy);
+  } else if(mode === 'flow'){
+    document.getElementById('flowWrap').style.display = 'block';
+    startFlow();
+  } else if(mode === 'stack'){
+    document.getElementById('stackWrap').style.display = 'flex';
+    startStack();
+  } else if(mode === 'screensaver'){
+    startScreensaver();
   }
 }
 
@@ -648,7 +703,153 @@ function answerQuiz(choice, btn){
   setTimeout(nextQuestion, 1800);
 }
 
-function clearCSV(){
+// ==================== FLOW ====================
+let flowItems = [], flowAnimId = null;
+function startFlow(){
+  const wrap = document.getElementById('flowWrap');
+  wrap.innerHTML = '';
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const pool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
+  const count = Math.min(pool.length, 30);
+  flowItems = Array.from({length: count}, (_, i) => {
+    const r = pool[i % pool.length];
+    const tid = (r['Track URI']||'').replace('spotify:track:','');
+    const size = 80 + Math.random()*80;
+    const el = document.createElement('div');
+    el.className = 'flow-item';
+    el.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*W}px;top:${Math.random()*H}px`;
+    el.innerHTML = `<img src="${artCache[tid]}" alt=""><div class="flow-info"><div class="f-track">${r['Track Name']}</div><div class="f-bpm">${v(r,'Tempo').toFixed(0)} BPM</div></div>`;
+    const tid2 = tid;
+    el.onclick = () => { if(tid2) openSpotify('spotify:track:'+tid2); };
+    wrap.appendChild(el);
+    return {
+      el, x: parseFloat(el.style.left), y: parseFloat(el.style.top),
+      vx: (Math.random()-0.5)*0.4,
+      vy: (Math.random()-0.5)*0.4,
+      size, W, H
+    };
+  });
+  animateFlow();
+}
+
+function animateFlow(){
+  flowAnimId = requestAnimationFrame(animateFlow);
+  const wrap = document.getElementById('flowWrap');
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  flowItems.forEach(item => {
+    item.x += item.vx;
+    item.y += item.vy;
+    if(item.x < -item.size) item.x = W;
+    if(item.x > W) item.x = -item.size;
+    if(item.y < -item.size) item.y = H;
+    if(item.y > H) item.y = -item.size;
+    item.el.style.left = item.x + 'px';
+    item.el.style.top = item.y + 'px';
+  });
+}
+function stopFlow(){ if(flowAnimId){ cancelAnimationFrame(flowAnimId); flowAnimId = null; } }
+
+// ==================== STACK ====================
+let stackPool = [], stackIdx = 0;
+function startStack(){
+  stackPool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
+  stackIdx = 0;
+  renderStack();
+}
+
+function renderStack(){
+  const inner = document.getElementById('stackInner');
+  const detail = document.getElementById('stackDetail');
+  inner.innerHTML = '';
+  if(!stackPool.length) return;
+
+  // โช 5 การ์ดซ้อนกัน
+  const cards = 5;
+  for(let i = cards-1; i >= 0; i--){
+    const r = stackPool[(stackIdx + i) % stackPool.length];
+    const tid = (r['Track URI']||'').replace('spotify:track:','');
+    const card = document.createElement('div');
+    card.className = 'stack-card';
+    card.style.cssText = `
+      left: ${i*8}px; top: ${i*-6}px;
+      transform: rotate(${(i-2)*3}deg);
+      z-index: ${cards-i};
+      opacity: ${1 - i*0.15};
+    `;
+    card.innerHTML = `<img src="${artCache[tid]||''}" alt="">`;
+    if(i === 0){
+      card.onclick = () => {
+        stackIdx = (stackIdx+1) % stackPool.length;
+        renderStack();
+      };
+    }
+    inner.appendChild(card);
+  }
+
+  // โช detail ของการ์ดบนสุด
+  const r = stackPool[stackIdx % stackPool.length];
+  const tid = (r['Track URI']||'').replace('spotify:track:','');
+  detail.style.display = 'block';
+  detail.innerHTML = `
+    <img class="sd-art" src="${artCache[tid]||''}" alt="">
+    <div class="sd-track">${r['Track Name']}</div>
+    <div class="sd-artist">${r['Artist Name(s)']||''}</div>
+    <div class="sd-stats">
+      <span style="color:var(--accent)">${v(r,'Tempo').toFixed(1)} BPM</span>
+      <span style="color:#ff6a6a">Energy ${Math.round(v(r,'Energy')*100)}%</span>
+      <span style="color:#f1c40f">Valence ${Math.round(v(r,'Valence')*100)}%</span>
+    </div>
+    ${tid?`<button onclick="openSpotify('spotify:track:${tid}')" style="margin-top:1rem;background:none;border:1px solid var(--border);color:var(--muted);padding:0.4rem 1rem;font-family:'Space Mono',monospace;font-size:0.7rem;border-radius:4px;cursor:pointer">Open in Spotify</button>`:''}
+  `;
+}
+function stopStack(){}
+
+// ==================== SCREENSAVER ====================
+let ssTimer = null, ssIdx = 0, ssPool = [];
+function startScreensaver(){
+  ssPool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
+  if(!ssPool.length) return;
+  ssIdx = Math.floor(Math.random() * ssPool.length);
+  const wrap = document.getElementById('ssWrap');
+  wrap.style.display = 'block';
+  wrap.innerHTML = `
+    <div class="ss-blur" id="ssBlur"></div>
+    <img class="ss-img" id="ssImg" src="" alt="">
+    <div class="ss-info">
+      <div class="ss-track" id="ssTrack"></div>
+      <div class="ss-artist" id="ssArtist"></div>
+      <div class="ss-bpm" id="ssBpm"></div>
+    </div>
+    <div class="ss-exit">กด ESC หรือคลิกเพื่อออก</div>
+  `;
+  wrap.onclick = stopScreensaver;
+  document.addEventListener('keydown', ssKeyHandler);
+  showSSSlide();
+  ssTimer = setInterval(() => {
+    ssIdx = (ssIdx+1) % ssPool.length;
+    showSSSlide();
+  }, 4000);
+}
+
+function showSSSlide(){
+  const r = ssPool[ssIdx];
+  const tid = (r['Track URI']||'').replace('spotify:track:','');
+  const src = artCache[tid]||'';
+  document.getElementById('ssBlur').style.backgroundImage = `url(${src})`;
+  document.getElementById('ssImg').src = src;
+  document.getElementById('ssTrack').textContent = r['Track Name'];
+  document.getElementById('ssArtist').textContent = r['Artist Name(s)']||'';
+  document.getElementById('ssBpm').textContent = v(r,'Tempo').toFixed(1)+' BPM';
+}
+
+function ssKeyHandler(e){ if(e.key==='Escape') stopScreensaver(); }
+
+function stopScreensaver(){
+  if(ssTimer){ clearInterval(ssTimer); ssTimer = null; }
+  document.removeEventListener('keydown', ssKeyHandler);
+  document.getElementById('ssWrap').style.display = 'none';
+  if(currentView === 'screensaver') setViewMode('table');
+}
   localStorage.removeItem('bpm_csv');
   localStorage.removeItem('bpm_csv_name');
   location.reload();
@@ -731,6 +932,8 @@ function filterTable(){
   loadAlbumArt().then(() => {
     if(currentView === 'mosaic') renderMosaic();
     else if(currentView === 'galaxy') renderGalaxy();
+    else if(currentView === 'flow'){ stopFlow(); startFlow(); }
+    else if(currentView === 'stack') startStack();
   });
 }
 
@@ -741,6 +944,8 @@ function clearArtCache(){
   loadAlbumArt().then(() => {
     if(currentView === 'mosaic') renderMosaic();
     else if(currentView === 'galaxy') renderGalaxy();
+    else if(currentView === 'flow'){ stopFlow(); startFlow(); }
+    else if(currentView === 'stack') startStack();
   });
   alert('ล้าง cache รูปแล้ว! กำลังโหลดใหม่...');
 }
