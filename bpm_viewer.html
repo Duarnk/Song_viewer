@@ -174,6 +174,16 @@
   .zine-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.75);opacity:0;transition:opacity 0.2s;display:flex;flex-direction:column;justify-content:flex-end;padding:0.75rem}
   .zine-overlay .zo-track{font-size:0.75rem;font-weight:700;color:#fff;line-height:1.3;margin-bottom:2px}
   .zine-overlay .zo-artist{font-size:0.6rem;color:rgba(255,255,255,0.7)}
+  /* ASCII */
+  #asciiWrap{background:#0a0a0a;padding:1.5rem;border-radius:8px;min-height:60vh}
+  .ascii-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1.5rem}
+  .ascii-item{cursor:pointer;position:relative;border:1px solid #222}
+  .ascii-item canvas{display:block;width:100%;image-rendering:pixelated}
+  .ascii-item img.ascii-real{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 0.4s ease}
+  .ascii-item:hover img.ascii-real{opacity:1}
+  .ascii-label{padding:0.5rem;background:#111;font-family:'Space Mono',monospace}
+  .ascii-label .al-track{font-size:0.65rem;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ascii-label .al-artist{font-size:0.55rem;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -227,6 +237,7 @@
         <div class="view-opt" onclick="setViewMode('mix')">Mix Pairs</div>
         <div class="view-opt" onclick="setViewMode('museum')">Museum</div>
         <div class="view-opt" onclick="setViewMode('zine')">Zine</div>
+        <div class="view-opt" onclick="setViewMode('ascii')">ASCII</div>
       </div>
     </div>
   </div>
@@ -322,6 +333,7 @@
   <div id="mixWrap" style="display:none"></div>
   <div id="museumWrap" style="display:none"></div>
   <div id="zineWrap" style="display:none"></div>
+  <div id="asciiWrap" style="display:none"></div>
 </div>
 
 <script>
@@ -418,7 +430,7 @@ document.addEventListener('click', e => {
 });
 
 function hideAllViews(){
-  ['mainTable','mosaicGrid','galaxyWrap','flowWrap','stackWrap','mixWrap','museumWrap','zineWrap'].forEach(id => {
+  ['mainTable','mosaicGrid','galaxyWrap','flowWrap','stackWrap','mixWrap','museumWrap','zineWrap','asciiWrap'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.style.display = 'none';
   });
@@ -432,7 +444,7 @@ function setViewMode(mode){
   document.getElementById('viewDropdown').style.display = 'none';
   document.querySelectorAll('.view-opt').forEach(o => o.classList.remove('active'));
   document.querySelector(`.view-opt[onclick="setViewMode('${mode}')"]`).classList.add('active');
-  const labels = {table:'Table',mosaic:'Mosaic',galaxy:'Galaxy',flow:'Flow',stack:'Stack',screensaver:'Screensaver',mix:'Mix Pairs',museum:'Museum',zine:'Zine'};
+  const labels = {table:'Table',mosaic:'Mosaic',galaxy:'Galaxy',flow:'Flow',stack:'Stack',screensaver:'Screensaver',mix:'Mix Pairs',museum:'Museum',zine:'Zine',ascii:'ASCII'};
   document.getElementById('viewModeBtn').textContent = (labels[mode]||mode) + ' ▾';
   hideAllViews();
   if(mode==='table'){
@@ -453,6 +465,8 @@ function setViewMode(mode){
     document.getElementById('museumWrap').style.display = 'block'; renderMuseum();
   } else if(mode==='zine'){
     document.getElementById('zineWrap').style.display = 'block'; renderZine();
+  } else if(mode==='ascii'){
+    document.getElementById('asciiWrap').style.display = 'block'; renderASCII();
   }
 }
 
@@ -659,8 +673,6 @@ function renderZine(){
   const wrap = document.getElementById('zineWrap');
   const pool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
   if(!pool.length){ wrap.innerHTML = '<p style="color:#000;font-size:0.8rem">ไม่มีเพลง</p>'; return; }
-
-  // pattern: large(2x2), normal, tall, text, normal, normal ...
   const pattern = ['large','normal','tall','text','normal','normal','text','normal','normal','tall'];
   let cells = '';
   pool.forEach((r, i) => {
@@ -669,7 +681,6 @@ function renderZine(){
     const type = pattern[i % pattern.length];
     const uri = tid ? `spotify:track:${tid}` : '';
     const onclick = uri ? `openSpotify('${uri}')` : '';
-
     if(type === 'text'){
       cells += `<div class="zine-cell zine-text" onclick="${onclick}">
         <div class="zt-num">${String(i+1).padStart(2,'0')}</div>
@@ -687,7 +698,6 @@ function renderZine(){
       </div>`;
     }
   });
-
   wrap.innerHTML = `
     <div class="zine-header">
       <div class="zine-title">PLAYLIST</div>
@@ -695,6 +705,104 @@ function renderZine(){
     </div>
     <div class="zine-grid">${cells}</div>
   `;
+}
+
+// ==================== ASCII ====================
+const ASCII_CHARS = ' .\'`^",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
+
+function imgToASCII(img, cols, colored){
+  const canvas = document.createElement('canvas');
+  const rows = Math.floor(cols * 0.5);
+  canvas.width = cols; canvas.height = rows;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0, cols, rows);
+  const data = ctx.getImageData(0, 0, cols, rows).data;
+  let result = '';
+  const colorMap = [];
+  for(let y = 0; y < rows; y++){
+    for(let x = 0; x < cols; x++){
+      const i = (y * cols + x) * 4;
+      const r = data[i], g = data[i+1], b = data[i+2];
+      const brightness = (0.299*r + 0.587*g + 0.114*b) / 255;
+      const charIdx = Math.floor(brightness * (ASCII_CHARS.length - 1));
+      result += ASCII_CHARS[charIdx];
+      colorMap.push(colored ? `rgb(${r},${g},${b})` : null);
+    }
+    result += '\n';
+  }
+  return { text: result, colorMap, cols, rows };
+}
+
+function drawASCIICanvas(canvas, asciiData, colored){
+  const {text, colorMap, cols, rows} = asciiData;
+  const fontSize = 6;
+  canvas.width = cols * fontSize * 0.6;
+  canvas.height = rows * fontSize * 1.2;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.font = `${fontSize}px monospace`;
+  const lines = text.split('\n');
+  lines.forEach((line, y) => {
+    for(let x = 0; x < line.length; x++){
+      const idx = y * cols + x;
+      if(colored && colorMap[idx]){
+        // mix between grayscale and color based on position (some colored, some bw)
+        const useColor = (idx % 3 === 0);
+        ctx.fillStyle = useColor ? colorMap[idx] : '#aaa';
+      } else {
+        ctx.fillStyle = '#aaa';
+      }
+      ctx.fillText(line[x], x * fontSize * 0.6, (y+1) * fontSize * 1.2);
+    }
+  });
+}
+
+function renderASCII(){
+  const wrap = document.getElementById('asciiWrap');
+  const pool = filtered.filter(r => artCache[(r['Track URI']||'').replace('spotify:track:','')]);
+  if(!pool.length){ wrap.innerHTML = '<p style="color:#555;font-family:monospace">ไม่มีรูปปก</p>'; return; }
+
+  wrap.innerHTML = `<div class="ascii-grid" id="asciiGrid"></div>`;
+  const grid = document.getElementById('asciiGrid');
+
+  pool.slice(0, 60).forEach((r, i) => {
+    const tid = (r['Track URI']||'').replace('spotify:track:','');
+    const src = artCache[tid]||'';
+    const uri = tid ? `spotify:track:${tid}` : '';
+
+    const item = document.createElement('div');
+    item.className = 'ascii-item';
+
+    const canvas = document.createElement('canvas');
+    const realImg = document.createElement('img');
+    realImg.className = 'ascii-real';
+    realImg.src = src;
+
+    const label = document.createElement('div');
+    label.className = 'ascii-label';
+    label.innerHTML = `<div class="al-track">${r['Track Name']}</div><div class="al-artist">${r['Artist Name(s)']||''}</div>`;
+
+    item.appendChild(canvas);
+    item.appendChild(realImg);
+    item.appendChild(label);
+    if(uri) item.onclick = () => openSpotify(uri);
+    grid.appendChild(item);
+
+    // load image and draw ASCII
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      // alternate: some bw some colored
+      const colored = (i % 3 !== 0);
+      const asciiData = imgToASCII(img, 60, colored);
+      drawASCIICanvas(canvas, asciiData, colored);
+    };
+    img.onerror = () => {
+      canvas.style.display = 'none';
+    };
+    img.src = src;
+  });
 }
 
 function renderMosaic(){
@@ -1082,6 +1190,7 @@ function filterTable(){
     else if(currentView==='mix') renderMix();
     else if(currentView==='museum') renderMuseum();
     else if(currentView==='zine') renderZine();
+    else if(currentView==='ascii') renderASCII();
   });
 }
 
@@ -1094,6 +1203,7 @@ function clearArtCache(){
     else if(currentView==='galaxy') renderGalaxy();
     else if(currentView==='museum') renderMuseum();
     else if(currentView==='zine') renderZine();
+    else if(currentView==='ascii') renderASCII();
   });
   alert('ล้าง cache รูปแล้ว! กำลังโหลดใหม่...');
 }
